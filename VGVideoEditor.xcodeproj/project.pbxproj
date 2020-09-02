@@ -7,23 +7,35 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E305F58324FE25BC005AE35C /* LHVideoEditPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E305F58224FE25BC005AE35C /* LHVideoEditPlayer.swift */; };
+		E305F58624FF35BF005AE35C /* test3.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = E305F58424FF35BF005AE35C /* test3.mp4 */; };
+		E305F58724FF35BF005AE35C /* test2.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = E305F58524FF35BF005AE35C /* test2.mp4 */; };
+		E305F58924FF391F005AE35C /* LHVideoSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E305F58824FF391F005AE35C /* LHVideoSource.swift */; };
+		E305F58C24FF86F0005AE35C /* LHVideoUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = E305F58B24FF86F0005AE35C /* LHVideoUtil.swift */; };
 		E37FFE9224FE1759008A7291 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37FFE9124FE1759008A7291 /* AppDelegate.swift */; };
-		E37FFE9424FE1759008A7291 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37FFE9324FE1759008A7291 /* SceneDelegate.swift */; };
 		E37FFE9624FE1759008A7291 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37FFE9524FE1759008A7291 /* ViewController.swift */; };
 		E37FFE9924FE1759008A7291 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E37FFE9724FE1759008A7291 /* Main.storyboard */; };
 		E37FFE9B24FE175B008A7291 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E37FFE9A24FE175B008A7291 /* Assets.xcassets */; };
 		E37FFE9E24FE175B008A7291 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E37FFE9C24FE175B008A7291 /* LaunchScreen.storyboard */; };
+		E37FFEAB24FE1C2A008A7291 /* LHVideoRootSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37FFEAA24FE1C2A008A7291 /* LHVideoRootSource.swift */; };
+		E37FFEAD24FE244A008A7291 /* LHVideoSubSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37FFEAC24FE244A008A7291 /* LHVideoSubSource.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E305F58224FE25BC005AE35C /* LHVideoEditPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHVideoEditPlayer.swift; sourceTree = "<group>"; };
+		E305F58424FF35BF005AE35C /* test3.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = test3.mp4; sourceTree = "<group>"; };
+		E305F58524FF35BF005AE35C /* test2.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = test2.mp4; sourceTree = "<group>"; };
+		E305F58824FF391F005AE35C /* LHVideoSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHVideoSource.swift; sourceTree = "<group>"; };
+		E305F58B24FF86F0005AE35C /* LHVideoUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHVideoUtil.swift; sourceTree = "<group>"; };
 		E37FFE8E24FE1759008A7291 /* VGVideoEditor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VGVideoEditor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E37FFE9124FE1759008A7291 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		E37FFE9324FE1759008A7291 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		E37FFE9524FE1759008A7291 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		E37FFE9824FE1759008A7291 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		E37FFE9A24FE175B008A7291 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E37FFE9D24FE175B008A7291 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		E37FFE9F24FE175B008A7291 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		E37FFEAA24FE1C2A008A7291 /* LHVideoRootSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHVideoRootSource.swift; sourceTree = "<group>"; };
+		E37FFEAC24FE244A008A7291 /* LHVideoSubSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHVideoSubSource.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -37,6 +49,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E305F58A24FF86AA005AE35C /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				E305F58B24FF86F0005AE35C /* LHVideoUtil.swift */,
+			);
+			path = Util;
+			sourceTree = "<group>";
+		};
 		E37FFE8524FE1759008A7291 = {
 			isa = PBXGroup;
 			children = (
@@ -56,15 +76,45 @@
 		E37FFE9024FE1759008A7291 /* VGVideoEditor */ = {
 			isa = PBXGroup;
 			children = (
+				E305F58A24FF86AA005AE35C /* Util */,
+				E37FFEA924FE1B29008A7291 /* Model */,
+				E37FFEA624FE1851008A7291 /* Tool */,
+				E37FFEA524FE1848008A7291 /* Player */,
 				E37FFE9124FE1759008A7291 /* AppDelegate.swift */,
-				E37FFE9324FE1759008A7291 /* SceneDelegate.swift */,
 				E37FFE9524FE1759008A7291 /* ViewController.swift */,
 				E37FFE9724FE1759008A7291 /* Main.storyboard */,
+				E305F58524FF35BF005AE35C /* test2.mp4 */,
+				E305F58424FF35BF005AE35C /* test3.mp4 */,
 				E37FFE9A24FE175B008A7291 /* Assets.xcassets */,
 				E37FFE9C24FE175B008A7291 /* LaunchScreen.storyboard */,
 				E37FFE9F24FE175B008A7291 /* Info.plist */,
 			);
 			path = VGVideoEditor;
+			sourceTree = "<group>";
+		};
+		E37FFEA524FE1848008A7291 /* Player */ = {
+			isa = PBXGroup;
+			children = (
+				E305F58224FE25BC005AE35C /* LHVideoEditPlayer.swift */,
+			);
+			path = Player;
+			sourceTree = "<group>";
+		};
+		E37FFEA624FE1851008A7291 /* Tool */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Tool;
+			sourceTree = "<group>";
+		};
+		E37FFEA924FE1B29008A7291 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				E305F58824FF391F005AE35C /* LHVideoSource.swift */,
+				E37FFEAA24FE1C2A008A7291 /* LHVideoRootSource.swift */,
+				E37FFEAC24FE244A008A7291 /* LHVideoSubSource.swift */,
+			);
+			path = Model;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -128,6 +178,8 @@
 				E37FFE9E24FE175B008A7291 /* LaunchScreen.storyboard in Resources */,
 				E37FFE9B24FE175B008A7291 /* Assets.xcassets in Resources */,
 				E37FFE9924FE1759008A7291 /* Main.storyboard in Resources */,
+				E305F58624FF35BF005AE35C /* test3.mp4 in Resources */,
+				E305F58724FF35BF005AE35C /* test2.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,8 +191,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				E37FFE9624FE1759008A7291 /* ViewController.swift in Sources */,
+				E37FFEAD24FE244A008A7291 /* LHVideoSubSource.swift in Sources */,
+				E305F58924FF391F005AE35C /* LHVideoSource.swift in Sources */,
+				E37FFEAB24FE1C2A008A7291 /* LHVideoRootSource.swift in Sources */,
+				E305F58C24FF86F0005AE35C /* LHVideoUtil.swift in Sources */,
+				E305F58324FE25BC005AE35C /* LHVideoEditPlayer.swift in Sources */,
 				E37FFE9224FE1759008A7291 /* AppDelegate.swift in Sources */,
-				E37FFE9424FE1759008A7291 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -284,15 +340,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = PA8N68X393;
 				INFOPLIST_FILE = VGVideoEditor/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = vege.VGVideoEditor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -302,15 +361,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = PA8N68X393;
 				INFOPLIST_FILE = VGVideoEditor/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = vege.VGVideoEditor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
