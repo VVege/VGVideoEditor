@@ -32,6 +32,10 @@ enum LHVideoDirection {
         }
     }
     
+    func isProperly() -> Bool {
+        return self == .landscapeRight
+    }
+    
     /** 矩阵校正 */
     // x = ax1 + cy1 + tx
     // y = bx1 + dy2 + ty

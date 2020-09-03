@@ -49,9 +49,10 @@ class LHVideoRootSource: LHVideoSource {
         let natureSize = videoTrack.naturalSize
         
         let initInstruction = AVMutableVideoCompositionInstruction()
-        initInstruction.timeRange = CMTimeRange.init(start: CMTime.zero, duration: composition.duration)
+        initInstruction.timeRange = CMTimeRange.init(start: CMTime.zero, duration: totalDuration)
         
         let initLayerInstruction = AVMutableVideoCompositionLayerInstruction.init(assetTrack: videoTrack)
+        //TODO：查看这里transform原理，竖屏的方向也要调整为 portrait 吗？
         let adjustTransform = direction.makeAdjustTransform(natureSize: natureSize)
         initLayerInstruction.setTransform(adjustTransform, at: CMTime.zero)
         
@@ -61,7 +62,7 @@ class LHVideoRootSource: LHVideoSource {
         
         ///TODO:查看正常情况的renderSize
         if direction == .portrait || direction == .portraitUpsideDown {
-              videoComposition.renderSize = CGSize(width: natureSize.height, height: natureSize.width)
+            videoComposition.renderSize = CGSize(width: natureSize.height, height: natureSize.width)
         }
         
         composition.naturalSize = videoComposition.renderSize
@@ -78,6 +79,10 @@ extension LHVideoRootSource {
     
     public func asset() -> AVAsset {
         return composition
+    }
+    
+    public func videoSettings() -> AVVideoComposition {
+        return videoComposition
     }
 }
 
@@ -96,23 +101,74 @@ extension LHVideoRootSource {
         let videoUrl = URL.init(fileURLWithPath: subSource.path)
         let videoAsset = AVURLAsset(url: videoUrl, options: nil)
         if let videoTrack = videoAsset.tracks(withMediaType: .video).first {
-            merge(videoTrack: videoTrack)
+            merge(videoTrack: videoTrack, duration: videoAsset.duration)
+        }else{
+            print("mergeComposition--error")
+            //TODO:错误处理
         }
     }
     
-    private func merge(videoTrack: AVAssetTrack) {
+    private func merge(videoTrack: AVAssetTrack, duration: CMTime) {
         let direction = LHVideoDirection.init(transform: videoTrack.preferredTransform)
-        let natureSize = videoTrack.naturalSize
+        var natureSize = videoTrack.naturalSize
+        let compositionTrack = compositionVideoTrack(assetTrack: videoTrack)
         
         var needNewInstrunction = true
-        if direction == .landscapeRight && instructions.count > 0 && natureSize.equalTo(composition.naturalSize) {
+        if direction == .landscapeRight && natureSize.equalTo(composition.naturalSize) {
             //无需instruction 直接插入视频
-        }else if direction == .landscapeRight && instructions.count > 0 {
+            do {
+                try compositionTrack?.insertTimeRange(CMTimeRange.init(start: CMTime.zero, duration: duration), of: videoTrack, at: totalDuration)
+                needNewInstrunction = false
+            } catch {
+                //TODO:错误处理
+            }
+        }else if direction == .landscapeRight, let instruction = instructions.last, let layerInstruction = instruction.layerInstructions.first {
+            //TODO:这里还要考虑多个 LayerInstruction 到底使用哪一个的问题
             //无需新的instrnction ,修改最后一个instrction时间来实现
+            var startTransform = CGAffineTransform.identity
+            layerInstruction.getTransformRamp(for: totalDuration, start: &startTransform, end: nil, timeRange: nil)
+        
+            if startTransform == videoTrack.preferredTransform && lastInstructionSize.equalTo(natureSize) {
+                instruction.timeRange = CMTimeRange.init(start: instruction.timeRange.start, duration: CMTimeAdd(instruction.timeRange.duration, duration))
+                do {
+                    try compositionTrack?.insertTimeRange(CMTimeRange.init(start: CMTime.zero, duration: duration), of: videoTrack, at: totalDuration)
+                } catch {
+                    //TODO:错误处理
+                }
+                needNewInstrunction = false
+            }else{
+                needNewInstrunction = true
+            }
         }
         
         if needNewInstrunction {
+            do {
+                try compositionTrack?.insertTimeRange(CMTimeRange.init(start: CMTime.zero, duration: duration), of: videoTrack, at: totalDuration)
+            } catch {
+                //TODO:错误处理
+            }
             
+            let newInstruction = AVMutableVideoCompositionInstruction()
+            newInstruction.timeRange = CMTimeRange.init(start: totalDuration, duration: duration)
+            
+            let newLayerInstruction = AVMutableVideoCompositionLayerInstruction.init(assetTrack: videoTrack)
+            let renderSize = videoComposition.renderSize
+            if direction == .portrait || direction == .portraitUpsideDown {
+                natureSize = CGSize.init(width: natureSize.height, height: natureSize.width)
+            }
+            
+            let scale = min(renderSize.width/natureSize.width, renderSize.height/natureSize.height)
+            lastInstructionSize = CGSize.init(width: natureSize.width * scale, height: natureSize.height * scale)
+            
+            // 移至中心点
+            let translate = CGPoint.init(x: (renderSize.width - natureSize.width * scale) * 0.5, y: (renderSize.height - natureSize.height * scale) * 0.5)
+            let natureTransform = videoTrack.preferredTransform
+            let preferredTransfrom = CGAffineTransform.init(a: natureTransform.a * scale, b: natureTransform.b * scale, c: natureTransform.c * scale, d: natureTransform.d * scale, tx: natureTransform.tx * scale + translate.x, ty: natureTransform.ty * scale + translate.y)
+            newLayerInstruction.setTransform(preferredTransfrom, at: CMTime.zero)
+            
+            newInstruction.layerInstructions = [newLayerInstruction]
+            instructions.append(newInstruction)
+            videoComposition.instructions = instructions
         }
     }
 }

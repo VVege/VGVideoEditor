@@ -31,6 +31,7 @@ extension LHVideoEditPlayer {
     public func refresh() {
         ///TODO:清除监听等操作
         let item = AVPlayerItem.init(asset: rootSource.asset())
+        item.videoComposition = rootSource.videoSettings()
         player.replaceCurrentItem(with: item)
     }
     
@@ -43,6 +44,7 @@ extension LHVideoEditPlayer {
 extension LHVideoEditPlayer {
     private func initAVPlayer() {
         let item = AVPlayerItem.init(asset: rootSource.asset())
+        item.videoComposition = rootSource.videoSettings()
         player = AVPlayer.init(playerItem: item)
     }
 }
