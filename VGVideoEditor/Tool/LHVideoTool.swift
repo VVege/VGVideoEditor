@@ -25,14 +25,27 @@ extension LHVideoTool {
         
         if let newVideoTrack = tuple.videoTrack {
             insertVideoTrackToComposition(videoTrack: newVideoTrack)
-            let usingInstructionType = determineInstructionUsingType(newVideoTrack: newVideoTrack)
-            switch usingInstructionType {
-            case .noneInstruction:
-                break
-            case .reuseLastInstruction:
-                adjustLastInstructionTime(newVideoDuration: videoAsset.duration)
-            case .newInstruction:
-                addNewInstruction(newVideoDuration: videoAsset.duration, newVideoTrack: newVideoTrack)
+            
+            let direction = LHVideoDirection.init(transform: newVideoTrack.preferredTransform)
+            var newVideoSize = newVideoTrack.naturalSize
+            /// 旋转角度适配
+            let adjustDirectionTransform = direction.makeAdjustTransform(natureSize: newVideoSize)
+            newVideoSize = newVideoSize.applying(adjustDirectionTransform)
+            if isFisrtMerge() {
+                // 30fps
+                videoComposition.frameDuration = CMTime.init(value: 1, timescale: 30)
+                videoComposition.renderSize = newVideoSize
+                if adjustDirectionTransform != CGAffineTransform.identity {
+                    addNewInstruction(newVideoDuration: videoAsset.duration, newVideoTrack: newVideoTrack, preferredTransform: adjustDirectionTransform)
+                }
+            }else{
+                let scale = min(renderSize.width/natureSize.width, renderSize.height/natureSize.height)
+                lastInstructionSize = CGSize.init(width: natureSize.width * scale, height: natureSize.height * scale)
+                
+                // 移至中心点
+                let translate = CGPoint.init(x: (renderSize.width - natureSize.width * scale) * 0.5, y: (renderSize.height - natureSize.height * scale) * 0.5)
+                let natureTransform = videoTrack.preferredTransform
+                let preferredTransfrom = CGAffineTransform.init(a: natureTransform.a * scale, b: natureTransform.b * scale, c: natureTransform.c * scale, d: natureTransform.d * scale, tx: natureTransform.tx * scale + translate.x, ty: natureTransform.ty * scale + translate.y)
             }
         }
         
@@ -44,6 +57,11 @@ extension LHVideoTool {
 
 //MARK:- Private
 extension LHVideoTool {
+    
+    private func isFisrtMerge() -> Bool {
+        return totalDuration == CMTime.zero
+    }
+    
     private typealias VideoSourceTuple = (videoTrack: AVAssetTrack?, audioTrack: AVAssetTrack?)
     
     private func getTrackInfo(from asset: AVURLAsset) -> VideoSourceTuple {
@@ -115,28 +133,14 @@ extension LHVideoTool {
     }
     
     ///TODO:这里要区分是开始的旋转方向，还是后来的大小变化
-    private func addNewInstruction(newVideoDuration: CMTime, newVideoTrack: AVAssetTrack) {
-        let direction = LHVideoDirection.init(transform: newVideoTrack.preferredTransform)
-        var newVideoSize = newVideoTrack.naturalSize
-        let adjustDirectionTransform = direction.makeAdjustTransform(natureSize: newVideoSize)
-        newVideoSize = newVideoSize.applying(adjustDirectionTransform)
-        
+    private func addNewInstruction(newVideoDuration: CMTime, newVideoTrack: AVAssetTrack, preferredTransform: CGAffineTransform) {
+
         let newInstruction = AVMutableVideoCompositionInstruction()
         newInstruction.timeRange = CMTimeRange.init(start: totalDuration, duration: newVideoDuration)
         
         let newLayerInstruction = AVMutableVideoCompositionLayerInstruction.init(assetTrack: newVideoTrack)
-        let renderSize = videoComposition.renderSize
         
-        let scale = min(renderSize.width/newVideoSize.width, renderSize.height/newVideoSize.height)
-        
-        // 移至中心点
-        let translate = CGPoint.init(x: (renderSize.width - newVideoSize.width * scale) * 0.5, y: (renderSize.height - newVideoSize.height * scale) * 0.5)
-        
-        let natureTransform = newVideoTrack.preferredTransform.concatenating(adjustDirectionTransform)
-        
-        let preferredTransfrom = CGAffineTransform.init(a: natureTransform.a * scale, b: natureTransform.b * scale, c: natureTransform.c * scale, d: natureTransform.d * scale, tx: natureTransform.tx * scale + translate.x, ty: natureTransform.ty * scale + translate.y)
-        newLayerInstruction.setTransform(preferredTransfrom, at: CMTime.zero)
-        
+        newLayerInstruction.setTransform(preferredTransform, at: CMTime.zero)
         newInstruction.layerInstructions = [newLayerInstruction]
         instructions.append(newInstruction)
         videoComposition.instructions = instructions
