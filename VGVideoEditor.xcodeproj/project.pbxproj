@@ -14,7 +14,6 @@
 		E305F58C24FF86F0005AE35C /* LHVideoUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = E305F58B24FF86F0005AE35C /* LHVideoUtil.swift */; };
 		E33C5DAB2500DD3F00ADE5A2 /* test6.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = E33C5DAA2500DD3F00ADE5A2 /* test6.mp4 */; };
 		E33C5DAD2500E20200ADE5A2 /* test5.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = E33C5DAC2500E20200ADE5A2 /* test5.mp4 */; };
-		E33C5DB32500EB1200ADE5A2 /* LHVideoTool.swift in Sources */ = {isa = PBXBuildFile; fileRef = E33C5DB22500EB1200ADE5A2 /* LHVideoTool.swift */; };
 		E37FFE9224FE1759008A7291 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37FFE9124FE1759008A7291 /* AppDelegate.swift */; };
 		E37FFE9624FE1759008A7291 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37FFE9524FE1759008A7291 /* ViewController.swift */; };
 		E37FFE9924FE1759008A7291 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E37FFE9724FE1759008A7291 /* Main.storyboard */; };
@@ -22,6 +21,9 @@
 		E37FFE9E24FE175B008A7291 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E37FFE9C24FE175B008A7291 /* LaunchScreen.storyboard */; };
 		E37FFEAB24FE1C2A008A7291 /* LHVideoRootSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37FFEAA24FE1C2A008A7291 /* LHVideoRootSource.swift */; };
 		E37FFEAD24FE244A008A7291 /* LHVideoSubSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = E37FFEAC24FE244A008A7291 /* LHVideoSubSource.swift */; };
+		E3AB633D2502198800B7C20E /* LHVideoComposition.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3AB633C2502198800B7C20E /* LHVideoComposition.swift */; };
+		E3AB633F25021CD100B7C20E /* LHVideoCompositer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3AB633E25021CD100B7C20E /* LHVideoCompositer.swift */; };
+		E3AB634125033ABD00B7C20E /* LHSound.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3AB634025033ABD00B7C20E /* LHSound.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,7 +34,6 @@
 		E305F58B24FF86F0005AE35C /* LHVideoUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHVideoUtil.swift; sourceTree = "<group>"; };
 		E33C5DAA2500DD3F00ADE5A2 /* test6.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = test6.mp4; sourceTree = "<group>"; };
 		E33C5DAC2500E20200ADE5A2 /* test5.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = test5.mp4; sourceTree = "<group>"; };
-		E33C5DB22500EB1200ADE5A2 /* LHVideoTool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHVideoTool.swift; sourceTree = "<group>"; };
 		E37FFE8E24FE1759008A7291 /* VGVideoEditor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VGVideoEditor.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E37FFE9124FE1759008A7291 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E37FFE9524FE1759008A7291 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -42,6 +43,9 @@
 		E37FFE9F24FE175B008A7291 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E37FFEAA24FE1C2A008A7291 /* LHVideoRootSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHVideoRootSource.swift; sourceTree = "<group>"; };
 		E37FFEAC24FE244A008A7291 /* LHVideoSubSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHVideoSubSource.swift; sourceTree = "<group>"; };
+		E3AB633C2502198800B7C20E /* LHVideoComposition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHVideoComposition.swift; sourceTree = "<group>"; };
+		E3AB633E25021CD100B7C20E /* LHVideoCompositer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHVideoCompositer.swift; sourceTree = "<group>"; };
+		E3AB634025033ABD00B7C20E /* LHSound.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHSound.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -111,7 +115,7 @@
 		E37FFEA624FE1851008A7291 /* Tool */ = {
 			isa = PBXGroup;
 			children = (
-				E33C5DB22500EB1200ADE5A2 /* LHVideoTool.swift */,
+				E3AB633E25021CD100B7C20E /* LHVideoCompositer.swift */,
 			);
 			path = Tool;
 			sourceTree = "<group>";
@@ -120,8 +124,10 @@
 			isa = PBXGroup;
 			children = (
 				E305F58824FF391F005AE35C /* LHVideoSource.swift */,
+				E3AB634025033ABD00B7C20E /* LHSound.swift */,
 				E37FFEAA24FE1C2A008A7291 /* LHVideoRootSource.swift */,
 				E37FFEAC24FE244A008A7291 /* LHVideoSubSource.swift */,
+				E3AB633C2502198800B7C20E /* LHVideoComposition.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -201,14 +207,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E3AB633F25021CD100B7C20E /* LHVideoCompositer.swift in Sources */,
 				E37FFE9624FE1759008A7291 /* ViewController.swift in Sources */,
+				E3AB633D2502198800B7C20E /* LHVideoComposition.swift in Sources */,
 				E37FFEAD24FE244A008A7291 /* LHVideoSubSource.swift in Sources */,
 				E305F58924FF391F005AE35C /* LHVideoSource.swift in Sources */,
 				E37FFEAB24FE1C2A008A7291 /* LHVideoRootSource.swift in Sources */,
 				E305F58C24FF86F0005AE35C /* LHVideoUtil.swift in Sources */,
-				E33C5DB32500EB1200ADE5A2 /* LHVideoTool.swift in Sources */,
 				E305F58324FE25BC005AE35C /* LHVideoEditPlayer.swift in Sources */,
 				E37FFE9224FE1759008A7291 /* AppDelegate.swift in Sources */,
+				E3AB634125033ABD00B7C20E /* LHSound.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

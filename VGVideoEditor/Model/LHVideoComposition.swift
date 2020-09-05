@@ -1,15 +1,15 @@
 //
-//  LHVideoTool.swift
+//  LHVideoComposition.swift
 //  VGVideoEditor
 //
-//  Created by 周智伟 on 2020/9/3.
+//  Created by 周智伟 on 2020/9/4.
 //  Copyright © 2020 vege. All rights reserved.
 //
 
 import UIKit
 import AVFoundation
 
-class LHVideoTool: NSObject {
+class LHVideoComposition: NSObject {
     private let composition = AVMutableComposition()
     private let videoComposition = AVMutableVideoComposition()
     private var instructions:[AVMutableVideoCompositionInstruction] = []
@@ -17,15 +17,29 @@ class LHVideoTool: NSObject {
 }
 
 //MARK:- Public
-extension LHVideoTool {
-    func merge(videoSource: LHVideoSource) {
+extension LHVideoComposition {
+    
+    public func duration() -> CMTime {
+        return totalDuration
+    }
+    
+    public func asset() -> AVAsset {
+        return composition
+    }
+    
+    public func videoMix() -> AVVideoComposition? {
+        return videoComposition
+    }
+    
+    public func merge(videoSource: LHVideoSource) {
         let videoUrl = URL.init(fileURLWithPath: videoSource.path)
         let videoAsset = AVURLAsset(url: videoUrl, options: nil)
+        let videoDuration = videoAsset.duration
         let tuple = getTrackInfo(from: videoAsset)
         
-        if let newVideoTrack = tuple.videoTrack {
-            insertVideoTrackToComposition(videoTrack: newVideoTrack)
-            
+        /// 插入视频轨道
+        if let newVideoTrack = tuple.videoTrack, let newVideoMergedTrack = insertVideoTrackToComposition(videoTrack: newVideoTrack, videoDuration: videoDuration) {
+
             let direction = LHVideoDirection.init(transform: newVideoTrack.preferredTransform)
             var newVideoSize = newVideoTrack.naturalSize
             /// 旋转角度适配
@@ -35,28 +49,63 @@ extension LHVideoTool {
                 // 30fps
                 videoComposition.frameDuration = CMTime.init(value: 1, timescale: 30)
                 videoComposition.renderSize = newVideoSize
-                if adjustDirectionTransform != CGAffineTransform.identity {
-                    addNewInstruction(newVideoDuration: videoAsset.duration, newVideoTrack: newVideoTrack, preferredTransform: adjustDirectionTransform)
-                }
+                composition.naturalSize = newVideoSize
+                
+                addNewInstruction(newVideoDuration: videoDuration, newVideoTrack: newVideoMergedTrack, preferredTransform: adjustDirectionTransform)
+//                if adjustDirectionTransform != CGAffineTransform.identity {
+//                    addNewInstruction(newVideoDuration: videoDuration, newVideoTrack: newVideoTrack, preferredTransform: adjustDirectionTransform)
+//                }
             }else{
-                let scale = min(renderSize.width/natureSize.width, renderSize.height/natureSize.height)
-                lastInstructionSize = CGSize.init(width: natureSize.width * scale, height: natureSize.height * scale)
+                let renderSize = videoComposition.renderSize
+            
+                let scale = min(renderSize.width/newVideoSize.width, renderSize.height/newVideoSize.height)
                 
                 // 移至中心点
-                let translate = CGPoint.init(x: (renderSize.width - natureSize.width * scale) * 0.5, y: (renderSize.height - natureSize.height * scale) * 0.5)
-                let natureTransform = videoTrack.preferredTransform
+                let translate = CGPoint.init(x: (renderSize.width - newVideoSize.width * scale) * 0.5, y: (renderSize.height - newVideoSize.height * scale) * 0.5)
+                let natureTransform = newVideoTrack.preferredTransform.concatenating(adjustDirectionTransform)
+                
                 let preferredTransfrom = CGAffineTransform.init(a: natureTransform.a * scale, b: natureTransform.b * scale, c: natureTransform.c * scale, d: natureTransform.d * scale, tx: natureTransform.tx * scale + translate.x, ty: natureTransform.ty * scale + translate.y)
+                
+                addNewInstruction(newVideoDuration: videoDuration, newVideoTrack: newVideoMergedTrack, preferredTransform: preferredTransfrom)
             }
         }
         
-        totalDuration = CMTimeAdd(totalDuration, videoAsset.duration)
+        //插入音频轨道
+        if let newAudioTrack = tuple.audioTrack, let newAudioMergedTrack = insertAudioTrackToComposition(audioTrack: newAudioTrack, videoDuration: videoDuration) {
+            //TODO: 研究audioMix
+            //TODO：视频所属的audio合成到一个 compositionTrack中，方便后期使用audioMix来管理
+        }
         
-        //TODO:音频处理
+        // 更新总时间
+        totalDuration = CMTimeAdd(totalDuration, videoAsset.duration)
+    }
+    
+    //MARK:- 单独合并音频
+    ///合并音频
+    public func merge(audio: LHSound) {
+        
+    }
+    
+    //MARK:- 背景相关操作
+    public func setBackgroundColor(_ color: UIColor) {
+        
+    }
+    
+    public func setBackgroundImage(_ color: UIColor) {
+        
+    }
+    
+    public func setVideoFillMode() {
+        
+    }
+    
+    public func setBackgroundRatio() {
+        
     }
 }
 
 //MARK:- Private
-extension LHVideoTool {
+extension LHVideoComposition {
     
     private func isFisrtMerge() -> Bool {
         return totalDuration == CMTime.zero
@@ -75,6 +124,14 @@ extension LHVideoTool {
             return track
         }
         let track = composition.addMutableTrack(withMediaType: AVMediaType.video, preferredTrackID: kCMPersistentTrackID_Invalid)
+        return track
+    }
+    
+    private func getCompositionAudioTrack(assetTrack: AVAssetTrack) -> AVMutableCompositionTrack? {
+        if let track = composition.mutableTrack(compatibleWith: assetTrack) {
+            return track
+        }
+        let track = composition.addMutableTrack(withMediaType: AVMediaType.audio, preferredTrackID: kCMPersistentTrackID_Invalid)
         return track
     }
     
@@ -108,20 +165,38 @@ extension LHVideoTool {
         return .newInstruction
     }
     
-    private func insertVideoTrackToComposition(videoTrack:AVAssetTrack) {
+    private func insertVideoTrackToComposition(videoTrack:AVAssetTrack, videoDuration: CMTime) -> AVCompositionTrack? {
         guard let compositionTrack = getCompositionVideoTrack(assetTrack: videoTrack) else {
             //TODO: 错误处理
             print("无法获取 compositionTrack")
-            return
+            return nil
         }
         
         do {
-            try compositionTrack.insertTimeRange(videoTrack.timeRange, of: videoTrack, at: totalDuration)
+            try compositionTrack.insertTimeRange(CMTimeRange.init(start: CMTime.zero, end: videoDuration), of: videoTrack, at: totalDuration)
         } catch {
             //TODO:无效视频处理
             print(error)
-            return
+            return nil
         }
+        return compositionTrack
+    }
+    
+    private func insertAudioTrackToComposition(audioTrack: AVAssetTrack, videoDuration: CMTime) -> AVCompositionTrack? {
+        guard let compositionTrack = getCompositionAudioTrack(assetTrack: audioTrack) else {
+            //TODO: 错误处理
+            print("无法获取 compositionTrack")
+            return nil
+        }
+        
+        do {
+            try compositionTrack.insertTimeRange(CMTimeRange.init(start: CMTime.zero, end: videoDuration), of: audioTrack, at: totalDuration)
+        } catch {
+            //TODO:无效视频处理
+            print(error)
+            return nil
+        }
+        return compositionTrack
     }
     
     private func adjustLastInstructionTime(newVideoDuration: CMTime) {
@@ -133,9 +208,10 @@ extension LHVideoTool {
     }
     
     ///TODO:这里要区分是开始的旋转方向，还是后来的大小变化
-    private func addNewInstruction(newVideoDuration: CMTime, newVideoTrack: AVAssetTrack, preferredTransform: CGAffineTransform) {
+    private func addNewInstruction(newVideoDuration: CMTime, newVideoTrack: AVCompositionTrack, preferredTransform: CGAffineTransform) {
 
         let newInstruction = AVMutableVideoCompositionInstruction()
+        
         newInstruction.timeRange = CMTimeRange.init(start: totalDuration, duration: newVideoDuration)
         
         let newLayerInstruction = AVMutableVideoCompositionLayerInstruction.init(assetTrack: newVideoTrack)

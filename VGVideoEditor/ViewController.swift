@@ -17,43 +17,45 @@ class ViewController: UIViewController {
 
     private var player:LHVideoEditPlayer!
     private var exportSession: AVAssetExportSession!
-    private var rootSource: LHVideoRootSource!
+    private var composition: LHVideoComposition!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         view.backgroundColor = UIColor.white
-        let transform1 = CGAffineTransform.identity
-        let transform2 = transform1.translatedBy(x: 10, y: 10)
-        let transform3 = transform2.scaledBy(x: 2, y: 2)
-        print("fff")
-        /*
-        let path = Bundle.main.path(forResource: "test5", ofType: "mp4")
-        rootSource = LHVideoRootSource.init(videoPath: path!)
         
-        let path1 = Bundle.main.path(forResource: "test6", ofType: "mp4")
-        let subSource = LHVideoSubSource.init(videoPath: path1!)
+        composition = LHVideoComposition()
         
-        rootSource.append(subSource: subSource)
-        export()
- */
-//        play()
+        let path = Bundle.main.path(forResource: "test3", ofType: "mp4")
+        let source = LHVideoSource.init(videoPath: path!)
+        
+        let path1 = Bundle.main.path(forResource: "test2", ofType: "mp4")
+        let source1 = LHVideoSource.init(videoPath: path1!)
+        
+        NSLog("开始合并")
+        composition.merge(videoSource: source)
+        composition.merge(videoSource: source1)
+        NSLog("完成合并")
+        print("toolDuration\(composition.duration())")
+//        export()
+        play()
     }
     
     func play() {
-        player = LHVideoEditPlayer.init(source: rootSource)
+        player = LHVideoEditPlayer.init(composition: composition)
         player.layer.frame = CGRect(x: 100, y: 100, width: 200, height: 200)
         view.layer.addSublayer(player.layer)
-        player.play()
     }
     
     func export() {
+        print(filePath)
         if FileManager.default.fileExists(atPath: filePath) {
             try? FileManager.default.removeItem(atPath: filePath)
         }
-        exportSession = AVAssetExportSession.init(asset: rootSource.asset(), presetName: AVAssetExportPresetHighestQuality)
+        exportSession = AVAssetExportSession.init(asset: composition.asset(), presetName: AVAssetExportPresetHighestQuality)
         exportSession.shouldOptimizeForNetworkUse = true
-        exportSession.videoComposition = rootSource.videoSettings()
-        exportSession.timeRange = CMTimeRange.init(start: CMTime.zero, end: rootSource.asset().duration)
+        exportSession.videoComposition = composition.videoMix()
+        exportSession.timeRange = CMTimeRange.init(start: CMTime.zero, end: composition.duration())
         exportSession.outputURL = URL.init(fileURLWithPath: filePath)
         exportSession.outputFileType = .mp4
         

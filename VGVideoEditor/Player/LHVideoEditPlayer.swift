@@ -9,18 +9,17 @@
 import UIKit
 import AVFoundation
 
-class LHVideoEditPlayer {
+class LHVideoEditPlayer: NSObject {
     public var layer: CALayer {
         return playerLayer
     }
     
-    public let rootSource:LHVideoRootSource
-    
     private var player: AVPlayer!
     private let playerLayer = AVPlayerLayer()
-    
-    init(source: LHVideoRootSource) {
-        rootSource = source
+    private var myComposition: LHVideoComposition!
+    init(composition: LHVideoComposition) {
+        super.init()
+        myComposition = composition
         initAVPlayer()
         playerLayer.player = player
     }
@@ -30,8 +29,8 @@ class LHVideoEditPlayer {
 extension LHVideoEditPlayer {
     public func refresh() {
         ///TODO:清除监听等操作
-        let item = AVPlayerItem.init(asset: rootSource.asset())
-        item.videoComposition = rootSource.videoSettings()
+        let item = AVPlayerItem.init(asset: myComposition.asset())
+        item.videoComposition = myComposition.videoMix()
         player.replaceCurrentItem(with: item)
     }
     
@@ -43,8 +42,22 @@ extension LHVideoEditPlayer {
 //MARK:- Private
 extension LHVideoEditPlayer {
     private func initAVPlayer() {
-        let item = AVPlayerItem.init(asset: rootSource.asset())
-        item.videoComposition = rootSource.videoSettings()
+        NSLog("创建player")
+        let item = AVPlayerItem.init(asset: myComposition.asset())
+        item.videoComposition = myComposition.videoMix()
         player = AVPlayer.init(playerItem: item)
+        item.addObserver(self, forKeyPath: "status", options: NSKeyValueObservingOptions.new.union(.old), context: nil)
+    }
+    
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+        if keyPath == "status", let status = player.currentItem?.status {
+            if status == .readyToPlay {
+                NSLog("开始播放")
+                player.play()
+            }else{
+                print(status)
+            }
+        }
     }
 }
+
