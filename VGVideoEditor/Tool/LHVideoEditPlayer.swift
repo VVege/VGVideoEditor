@@ -16,10 +16,10 @@ class LHVideoEditPlayer: NSObject {
     
     private var player: AVPlayer!
     private let playerLayer = AVPlayerLayer()
-    private var myComposition: LHVideoComposition!
-    init(composition: LHVideoComposition) {
+    private var package: LHVideoSettingPackage!
+    init(settingPackage: LHVideoSettingPackage) {
         super.init()
-        myComposition = composition
+        package = settingPackage
         initAVPlayer()
         playerLayer.player = player
     }
@@ -29,8 +29,8 @@ class LHVideoEditPlayer: NSObject {
 extension LHVideoEditPlayer {
     public func refresh() {
         ///TODO:清除监听等操作
-        let item = AVPlayerItem.init(asset: myComposition.asset())
-        item.videoComposition = myComposition.videoMix()
+        let item = AVPlayerItem.init(asset: package.composition)
+        item.videoComposition = package.videoComposition
         player.replaceCurrentItem(with: item)
     }
     
@@ -43,8 +43,8 @@ extension LHVideoEditPlayer {
 extension LHVideoEditPlayer {
     private func initAVPlayer() {
         NSLog("创建player")
-        let item = AVPlayerItem.init(asset: myComposition.asset())
-        item.videoComposition = myComposition.videoMix()
+        let item = AVPlayerItem.init(asset: package.composition)
+        item.videoComposition = package.videoComposition
         player = AVPlayer.init(playerItem: item)
         item.addObserver(self, forKeyPath: "status", options: NSKeyValueObservingOptions.new.union(.old), context: nil)
     }

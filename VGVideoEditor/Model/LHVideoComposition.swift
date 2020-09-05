@@ -10,6 +10,8 @@ import UIKit
 import AVFoundation
 
 class LHVideoComposition: NSObject {
+    public var videos:[LHVideoSource] = []
+    
     private let composition = AVMutableComposition()
     private let videoComposition = AVMutableVideoComposition()
     private var instructions:[AVMutableVideoCompositionInstruction] = []
@@ -32,6 +34,8 @@ extension LHVideoComposition {
     }
     
     public func merge(videoSource: LHVideoSource) {
+        videos.append(videoSource)
+        
         let videoUrl = URL.init(fileURLWithPath: videoSource.path)
         let videoAsset = AVURLAsset(url: videoUrl, options: nil)
         let videoDuration = videoAsset.duration

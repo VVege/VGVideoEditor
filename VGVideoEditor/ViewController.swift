@@ -17,34 +17,48 @@ class ViewController: UIViewController {
 
     private var player:LHVideoEditPlayer!
     private var exportSession: AVAssetExportSession!
-    private var composition: LHVideoComposition!
+    private var processor: LHVideoCompositionProcessor!
+    private var exporter: LHVideoExporter!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         view.backgroundColor = UIColor.white
         
-        composition = LHVideoComposition()
+        let composition = LHVideoComposition()
+        processor = LHVideoCompositionProcessor.init(model: composition)
         
-        let path = Bundle.main.path(forResource: "test3", ofType: "mp4")
+        
+        let path = Bundle.main.path(forResource: "test2", ofType: "mp4")
         let source = LHVideoSource.init(videoPath: path!)
         
-        let path1 = Bundle.main.path(forResource: "test2", ofType: "mp4")
+        let path1 = Bundle.main.path(forResource: "test3", ofType: "mp4")
         let source1 = LHVideoSource.init(videoPath: path1!)
         
         NSLog("开始合并")
-        composition.merge(videoSource: source)
-        composition.merge(videoSource: source1)
+        processor.merge(video: source)
+        processor.merge(video: source1)
         NSLog("完成合并")
-        print("toolDuration\(composition.duration())")
-//        export()
-        play()
+        NSLog("开始裁剪")
+        let stayRange = CMTimeRange.init(start: CMTime.init(value: 8 * 600, timescale: 600), end: CMTime.init(value: 16 * 600, timescale: 600))
+        processor.cut(range: stayRange)
+        NSLog("结束裁剪")
+        print("toolDuration\(processor.settingPackage.totalDuration)")
+        export()
+//        play()
+//        otherExport()
     }
     
     func play() {
-        player = LHVideoEditPlayer.init(composition: composition)
+        player = LHVideoEditPlayer.init(settingPackage: processor.settingPackage)
         player.layer.frame = CGRect(x: 100, y: 100, width: 200, height: 200)
         view.layer.addSublayer(player.layer)
+    }
+    
+    func otherExport() {
+        exporter = LHVideoExporter.init(processer: processor)
+        view.layer.addSublayer(exporter.layer)
+        exporter.export()
     }
     
     func export() {
@@ -52,10 +66,10 @@ class ViewController: UIViewController {
         if FileManager.default.fileExists(atPath: filePath) {
             try? FileManager.default.removeItem(atPath: filePath)
         }
-        exportSession = AVAssetExportSession.init(asset: composition.asset(), presetName: AVAssetExportPresetHighestQuality)
+        exportSession = AVAssetExportSession.init(asset: processor.settingPackage.composition, presetName: AVAssetExportPresetHighestQuality)
         exportSession.shouldOptimizeForNetworkUse = true
-        exportSession.videoComposition = composition.videoMix()
-        exportSession.timeRange = CMTimeRange.init(start: CMTime.zero, end: composition.duration())
+        exportSession.videoComposition = processor.settingPackage.videoComposition
+        exportSession.timeRange = CMTimeRange.init(start: CMTime.zero, end: processor.settingPackage.totalDuration)
         exportSession.outputURL = URL.init(fileURLWithPath: filePath)
         exportSession.outputFileType = .mp4
         

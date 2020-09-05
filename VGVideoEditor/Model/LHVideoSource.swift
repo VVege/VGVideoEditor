@@ -10,7 +10,7 @@ import UIKit
 
 class LHVideoSource: NSObject {
     public let path:String
-    
+    public var duration: Double = 0
     init(videoPath: String) {
         path = videoPath
     }
