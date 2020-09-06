@@ -9,17 +9,6 @@
 import UIKit
 import AVFoundation
 
-class LHVideoSettingPackage {
-    let composition = AVMutableComposition()
-    let videoComposition = AVMutableVideoComposition()
-    var instructions:[AVMutableVideoCompositionInstruction] = []
-    var totalDuration = CMTime.zero
-    
-    func isEmpty() -> Bool {
-        return totalDuration == CMTime.zero
-    }
-}
-
 class LHVideoCompositionProcessor: NSObject {
     
     public let processModel: LHVideoComposition
@@ -46,7 +35,7 @@ extension LHVideoCompositionProcessor {
     }
     
     ///合并音频
-    public func merge(audio: LHSound) {
+    public func merge(audio: LHSoundSource) {
         
     }
 
@@ -58,7 +47,8 @@ extension LHVideoCompositionProcessor {
     
     //MARK:- 背景相关操作
     public func setBackgroundColor(_ color: UIColor) {
-        
+        let command = LHVideoBackgroundColorCommand.init(settingPackage: settingPackage, color: color)
+        command.invoke()
     }
     
     public func setBackgroundImage(_ color: UIColor) {

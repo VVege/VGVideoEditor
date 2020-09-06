@@ -41,11 +41,17 @@ extension LHVideoMergeCommand {
             /// 旋转角度适配
             let adjustDirectionTransform = direction.makeAdjustTransform(natureSize: newVideoSize)
             newVideoSize = newVideoSize.applying(adjustDirectionTransform)
+            
+            
+            
             if package.isEmpty() {
                 // 30fps
                 package.videoComposition.frameDuration = CMTime.init(value: 1, timescale: 30)
                 package.videoComposition.renderSize = newVideoSize
                 package.composition.naturalSize = newVideoSize
+                /// 更新package
+                package.videoFrame = CGRect(x: 0, y: 0, width: newVideoSize.width, height: newVideoSize.height)
+                package.renderSize = package.videoFrame.size
                 
                 addNewInstruction(newVideoDuration: videoDuration, newVideoTrack: newVideoMergedTrack, preferredTransform: adjustDirectionTransform)
 //                                if adjustDirectionTransform != CGAffineTransform.identity {
@@ -88,9 +94,12 @@ extension LHVideoMergeCommand {
     }
     
     private func getCompositionVideoTrack(assetTrack: AVAssetTrack) -> AVMutableCompositionTrack? {
+        //暂时都使用新轨道
+        /*
         if let track = package.composition.mutableTrack(compatibleWith: assetTrack) {
             return track
-        }
+        }*/
+        
         let track = package.composition.addMutableTrack(withMediaType: AVMediaType.video, preferredTrackID: kCMPersistentTrackID_Invalid)
         return track
     }
@@ -106,7 +115,7 @@ extension LHVideoMergeCommand {
 
 //MARK:- Private Insert Track
 extension LHVideoMergeCommand {
-    private func insertVideoTrackToComposition(videoTrack:AVAssetTrack, videoDuration: CMTime) -> AVCompositionTrack? {
+    private func insertVideoTrackToComposition(videoTrack:AVAssetTrack, videoDuration: CMTime) -> AVMutableCompositionTrack? {
         guard let compositionTrack = getCompositionVideoTrack(assetTrack: videoTrack) else {
             //TODO: 错误处理
             print("无法获取 compositionTrack")
@@ -143,13 +152,17 @@ extension LHVideoMergeCommand {
 
 //MARK:- Private Instruction
 extension LHVideoMergeCommand {
-    private func addNewInstruction(newVideoDuration: CMTime, newVideoTrack: AVCompositionTrack, preferredTransform: CGAffineTransform) {
-
+    private func addNewInstruction(newVideoDuration: CMTime, newVideoTrack: AVMutableCompositionTrack, preferredTransform: CGAffineTransform) {
+        package.videoTrackTransforms[newVideoTrack] = preferredTransform
+        /*
         if let instrunction = package.instructions.first {
             let lastEndTime = instrunction.timeRange.end
             instrunction.timeRange = CMTimeRange.init(start: CMTime.zero, end: CMTimeAdd(instrunction.timeRange.end, newVideoDuration))
+            
             let newLayerInstruction = AVMutableVideoCompositionLayerInstruction.init(assetTrack: newVideoTrack)
+            /*奇怪，为什么这两个设置都能正常播放*/
             newLayerInstruction.setTransform(preferredTransform, at: lastEndTime)
+//            newLayerInstruction.setTransform(preferredTransform, at: newVideoTrack.timeRange.start)
             
             var lasts = instrunction.layerInstructions
             lasts.append(newLayerInstruction)
@@ -166,10 +179,12 @@ extension LHVideoMergeCommand {
             newInstruction.layerInstructions = [newLayerInstruction]
             package.instructions.append(newInstruction)
             package.videoComposition.instructions = package.instructions
-        }
-        /*
-        let newInstruction = AVMutableVideoCompositionInstruction()
+        }*/
         
+        let newInstruction = AVMutableVideoCompositionInstruction()
+        newInstruction.backgroundColor = UIColor.init(white: 0, alpha: 0).cgColor
+        /*这里可以修改合并的背景颜色*/
+//        newInstruction.backgroundColor = UIColor.green.cgColor
         newInstruction.timeRange = CMTimeRange.init(start: package.totalDuration, duration: newVideoDuration)
         
         let newLayerInstruction = AVMutableVideoCompositionLayerInstruction.init(assetTrack: newVideoTrack)
@@ -178,6 +193,5 @@ extension LHVideoMergeCommand {
         newInstruction.layerInstructions = [newLayerInstruction]
         package.instructions.append(newInstruction)
         package.videoComposition.instructions = package.instructions
- */
     }
 }

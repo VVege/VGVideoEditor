@@ -28,7 +28,6 @@ class ViewController: UIViewController {
         let composition = LHVideoComposition()
         processor = LHVideoCompositionProcessor.init(model: composition)
         
-        
         let path = Bundle.main.path(forResource: "test2", ofType: "mp4")
         let source = LHVideoSource.init(videoPath: path!)
         
@@ -38,11 +37,14 @@ class ViewController: UIViewController {
         NSLog("开始合并")
         processor.merge(video: source)
         processor.merge(video: source1)
+        processor.setBackgroundColor(UIColor.red)
         NSLog("完成合并")
+        /*
         NSLog("开始裁剪")
-        let stayRange = CMTimeRange.init(start: CMTime.init(value: 8 * 600, timescale: 600), end: CMTime.init(value: 16 * 600, timescale: 600))
+        let stayRange = CMTimeRange.init(start: CMTime.init(value: 8 * 600, timescale: 600), end: CMTime.init(value: 12 * 600, timescale: 600))
         processor.cut(range: stayRange)
         NSLog("结束裁剪")
+ */
         print("toolDuration\(processor.settingPackage.totalDuration)")
         export()
 //        play()
@@ -51,7 +53,7 @@ class ViewController: UIViewController {
     
     func play() {
         player = LHVideoEditPlayer.init(settingPackage: processor.settingPackage)
-        player.layer.frame = CGRect(x: 100, y: 100, width: 200, height: 200)
+        player.layer.frame = UIScreen.main.bounds
         view.layer.addSublayer(player.layer)
     }
     

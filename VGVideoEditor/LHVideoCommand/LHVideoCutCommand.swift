@@ -36,17 +36,20 @@ extension LHVideoCutCommand {
         }
         
         for compositionTrack in package.composition.tracks(withMediaType: .audio) {
-//            compositionTrack.removeTimeRange(cutRange)
-            subRange(compositionTrack: compositionTrack, range: cutRange)
+            compositionTrack.removeTimeRange(cutRange)
+//            subRange(compositionTrack: compositionTrack, range: cutRange)
         }
         
         for compositionTrack in package.composition.tracks(withMediaType: .video) {
-//            compositionTrack.removeTimeRange(cutRange)
-            subRange(compositionTrack: compositionTrack, range: cutRange)
+            compositionTrack.removeTimeRange(cutRange)
+//            subRange(compositionTrack: compositionTrack, range: cutRange)
+            
         }        
         
+//        package.updateLayerInstructions()
+        
 //        package.instructions[0].timeRange = CMTimeRange.init(start: CMTime.init(value: 0, timescale: 600), end: CMTime.init(value: 2 * 600, timescale: 600))
-//        package.instructions[1].timeRange = CMTimeRange.init(start: CMTime.init(value: 2, timescale: 600), end: CMTime.init(value: 9 * 600, timescale: 600))
+//        package.instructions[1].timeRange = CMTimeRange.init(start: CMTime.init(value: 2, timescale: 600), end: CMTime.init(value: 8 * 600, timescale: 600))
 //        var
 //        for (index, instruction) in package.instructions.enumerated() {
 //            if index == 0 {

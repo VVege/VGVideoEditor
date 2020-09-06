@@ -34,18 +34,18 @@ class LHVideoExporter: NSObject {
         let duration = videoDuration.seconds
         let total = timeScale * duration
         NSLog("测试导出")
-        queue.async { [weak self] in
+//        queue.async { [weak self] in
             for i in  0...Int(total) {
                 var actualTime:CMTime = CMTime.zero
                 let currentTime = CMTime.init(value: CMTimeValue(i), timescale: 30)
-                if let cgImage = try? self?.assetGenerator?.copyCGImage(at: currentTime, actualTime: &actualTime) {
+                if let cgImage = try? self.assetGenerator?.copyCGImage(at: currentTime, actualTime: &actualTime) {
                     CATransaction.begin()
                     CATransaction.setDisableActions(true)
-                    self?.layer.contents = cgImage
+                    self.layer.contents = cgImage
                     CATransaction.commit()
                 }
                 NSLog("导出进度：%f", Double(i)/total)
-            }
+//            }
             NSLog("导出完成")
         }
     }
