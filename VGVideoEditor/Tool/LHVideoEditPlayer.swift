@@ -9,55 +9,97 @@
 import UIKit
 import AVFoundation
 
+/// 先只合并视频
+/// 音频采用原来的
 class LHVideoEditPlayer: NSObject {
-    public var layer: CALayer {
-        return playerLayer
-    }
+    /// layer 的 size 由 LHVideoComposition bgSize决定，不要手动改
+    /// 修改位置使用 layer.position
+    public let layer = CALayer()
     
     private var player: AVPlayer!
     private let playerLayer = AVPlayerLayer()
-    private var package: LHVideoSettingPackage!
-    init(settingPackage: LHVideoSettingPackage) {
+    private var currentTime:Double = 0
+    
+    init(asset: AVAsset, videoComposition: AVVideoComposition?) {
         super.init()
-        package = settingPackage
-        initAVPlayer()
+        let item = AVPlayerItem.init(asset: asset)
+        item.videoComposition = videoComposition
+        player = AVPlayer.init(playerItem: item)
+        item.addObserver(self, forKeyPath: "status", options: NSKeyValueObservingOptions.new.union(.old), context: nil)
         playerLayer.player = player
+        layer.addSublayer(playerLayer)
+    }
+    
+    deinit {
+        player.currentItem?.removeObserver(self, forKeyPath: "status")
     }
 }
 
 //MARK:- Public
 extension LHVideoEditPlayer {
-    public func refresh() {
-        ///TODO:清除监听等操作
-        let item = AVPlayerItem.init(asset: package.composition)
-        item.videoComposition = package.videoComposition
-        player.replaceCurrentItem(with: item)
+    public func refresh(composition: LHVideoComposition){
+        
+//        let current = self.composition
+
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        /// TODO:检测sound
+//        if composition.rate != current.rate {
+            player.rate = Float(composition.rate)
+//        }
+//        if composition.bgColor != current.bgColor {
+            layer.backgroundColor = composition.bgColor?.cgColor
+//        }
+//        if composition.bgImage != current.bgImage {
+            layer.contents = composition.bgImage?.cgImage
+//        }
+//        if !composition.videoFrame.equalTo(current.videoFrame) {
+            playerLayer.frame = composition.videoFrame
+//        }
+//        if !composition.bgSize.equalTo(current.bgSize) {
+            layer.frame = CGRect.init(x: 0, y: 0, width: composition.bgSize.width, height: composition.bgSize.height)
+//        }
+//        if composition.fillMode != current.fillMode {
+//
+//        }
+        CATransaction.commit()
     }
     
-    public func play() {
-        player.play()
+    public func setCurrentTime(time: Double){
+        let cmTime = CMTime.init(value: CMTimeValue(time * 600), timescale: 600)
+        player.currentItem?.seek(to: cmTime, toleranceBefore: CMTime.zero, toleranceAfter: CMTime.zero)
     }
 }
 
-//MARK:- Private
+//MARK:- Private init Player
 extension LHVideoEditPlayer {
-    private func initAVPlayer() {
-        NSLog("创建player")
-        let item = AVPlayerItem.init(asset: package.composition)
-        item.videoComposition = package.videoComposition
-        player = AVPlayer.init(playerItem: item)
-        item.addObserver(self, forKeyPath: "status", options: NSKeyValueObservingOptions.new.union(.old), context: nil)
-    }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == "status", let status = player.currentItem?.status {
             if status == .readyToPlay {
                 NSLog("开始播放")
                 player.play()
+                player.rate = 2.0
+//                testPlay()
             }else{
                 print(status)
             }
         }
     }
+    
+    private func testPlay() {
+        let timer = Timer.scheduledTimer(withTimeInterval: 0.04, repeats: true) {[weak self] (_) in
+            let tolerance = CMTime.init(value: CMTimeValue(0.03 * 600), timescale: 600)
+            if let nowTime = self?.currentTime, let player = self?.player {
+                player.seek(to: CMTime.init(value: CMTimeValue.init(nowTime * 600), timescale: 600), toleranceBefore: tolerance, toleranceAfter: tolerance)
+                self?.currentTime += 0.04
+            }
+        }
+        RunLoop.main.add(timer, forMode: RunLoop.Mode.common)
+    }
 }
 
+//MARK:- Set Player
+extension LHVideoEditPlayer {
+     
+}

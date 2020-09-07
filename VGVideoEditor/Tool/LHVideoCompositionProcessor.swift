@@ -10,25 +10,27 @@ import UIKit
 import AVFoundation
 
 class LHVideoCompositionProcessor: NSObject {
-    
-    public let processModel: LHVideoComposition
-    
     public let settingPackage = LHVideoSettingPackage()
-    
-    init(model: LHVideoComposition) {
-        processModel = model
-        super.init()
-    }
 }
 
 //MARK:- Public
 extension LHVideoCompositionProcessor {
+
+    public typealias LHVideoCompositionLoadTuple = (asset: AVAsset, videoComposition: AVVideoComposition?, videoFrame:CGRect, renderSize:CGSize)
+    
+    public func loadCompositionInfo(composition: LHVideoComposition) ->  LHVideoCompositionLoadTuple {
+        
+        for videoSource in composition.videos {
+            merge(video: videoSource)
+        }
+    
+        return (asset: settingPackage.composition, videoComposition: settingPackage.videoComposition, videoFrame: settingPackage.videoFrame, renderSize: settingPackage.renderSize)
+    }
     
     //MARK:- 合并
     /// 合并视频
     public func merge(video: LHVideoSource) {
         video.duration = AVURLAsset.init(url: URL.init(fileURLWithPath: video.path)).duration.seconds
-        processModel.videos.append(video)
         
         let command = LHVideoMergeCommand.init(settingPackage: settingPackage, newVideoSource: video)
         command.invoke()
@@ -37,6 +39,12 @@ extension LHVideoCompositionProcessor {
     ///合并音频
     public func merge(audio: LHSoundSource) {
         
+    }
+    
+    //MARK:- 倍速
+    public func speed(_ speed: Double){
+        let command = LHVideoSpeedCommand.init(settingPackage: settingPackage, speed: 2)
+        command.invoke()
     }
 
     //MARK:- 裁剪

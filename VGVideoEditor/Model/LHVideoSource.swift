@@ -14,4 +14,10 @@ class LHVideoSource: NSObject {
     init(videoPath: String) {
         path = videoPath
     }
+    
+    func copySource() -> LHVideoSource {
+        let copy = LHVideoSource.init(videoPath: path)
+        copy.duration = duration
+        return copy
+    }
 }

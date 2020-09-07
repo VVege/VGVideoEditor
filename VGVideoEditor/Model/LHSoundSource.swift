@@ -9,5 +9,8 @@
 import UIKit
 
 class LHSoundSource: NSObject {
-
+    func copySource() -> LHSoundSource {
+        let copy = LHSoundSource()
+        return copy
+    }
 }

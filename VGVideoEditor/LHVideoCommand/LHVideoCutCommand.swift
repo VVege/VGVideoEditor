@@ -19,7 +19,7 @@ class LHVideoCutCommand: NSObject, LHVideoCommand {
         package = settingPackage
         super.init()
     }
-    
+
     func invoke() {
         cut()
     }

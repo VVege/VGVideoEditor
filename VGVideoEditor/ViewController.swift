@@ -24,21 +24,41 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         view.backgroundColor = UIColor.white
+        processor = LHVideoCompositionProcessor.init()
         
-        let composition = LHVideoComposition()
-        processor = LHVideoCompositionProcessor.init(model: composition)
         
-        let path = Bundle.main.path(forResource: "test2", ofType: "mp4")
+        let path = Bundle.main.path(forResource: "test5", ofType: "mp4")
         let source = LHVideoSource.init(videoPath: path!)
         
         let path1 = Bundle.main.path(forResource: "test3", ofType: "mp4")
         let source1 = LHVideoSource.init(videoPath: path1!)
         
+        processor.merge(video: source)
+        processor.merge(video: source1)
+        processor.speed(2)
+        export()
+        
+        /*
+        let composition = LHVideoComposition()
+        composition.videos = [source, source1]
+
+        let processor = LHVideoCompositionProcessor.init()
+        let tuple = processor.loadCompositionInfo(composition: composition)
+        let scale = min(view.bounds.width/tuple.renderSize.width, view.bounds.height/tuple.renderSize.height)
+        composition.bgSize = tuple.renderSize.applying(CGAffineTransform.identity.scaledBy(x: scale, y: scale))
+        composition.videoFrame = CGRect(x: 0, y: 0, width: composition.bgSize.width, height: composition.bgSize.height)
+        
+        loadPlayer(asset: tuple.asset, videoComposition: tuple.videoComposition)
+        player.refresh(composition: composition)
+        player.layer.position = CGPoint(x: UIScreen.main.bounds.width/2, y: UIScreen.main.bounds.height/2)
+ */
+        /*
         NSLog("开始合并")
         processor.merge(video: source)
         processor.merge(video: source1)
         processor.setBackgroundColor(UIColor.red)
         NSLog("完成合并")
+ */
         /*
         NSLog("开始裁剪")
         let stayRange = CMTimeRange.init(start: CMTime.init(value: 8 * 600, timescale: 600), end: CMTime.init(value: 12 * 600, timescale: 600))
@@ -46,14 +66,13 @@ class ViewController: UIViewController {
         NSLog("结束裁剪")
  */
         print("toolDuration\(processor.settingPackage.totalDuration)")
-        export()
+//        export()
 //        play()
 //        otherExport()
     }
     
-    func play() {
-        player = LHVideoEditPlayer.init(settingPackage: processor.settingPackage)
-        player.layer.frame = UIScreen.main.bounds
+    func loadPlayer(asset: AVAsset, videoComposition: AVVideoComposition?) {
+        player = LHVideoEditPlayer.init(asset: asset, videoComposition: videoComposition)
         view.layer.addSublayer(player.layer)
     }
     

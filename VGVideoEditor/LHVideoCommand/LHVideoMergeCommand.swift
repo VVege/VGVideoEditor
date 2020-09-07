@@ -41,9 +41,7 @@ extension LHVideoMergeCommand {
             /// 旋转角度适配
             let adjustDirectionTransform = direction.makeAdjustTransform(natureSize: newVideoSize)
             newVideoSize = newVideoSize.applying(adjustDirectionTransform)
-            
-            
-            
+                        
             if package.isEmpty() {
                 // 30fps
                 package.videoComposition.frameDuration = CMTime.init(value: 1, timescale: 30)
