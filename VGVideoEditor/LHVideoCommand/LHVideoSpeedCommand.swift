@@ -30,27 +30,37 @@ class LHVideoSpeedCommand: NSObject, LHVideoCommand{
             let newDuration = CMTimeMultiplyByFloat64(oldDuration, multiplier: multiplier)
             let end = CMTimeAdd(start, newDuration)
             instruction.timeRange = CMTimeRange.init(start: start, end: end)
-            insertPoint = CMTimeAdd(instruction.timeRange.start, instruction.timeRange.duration)
+            insertPoint = instruction.timeRange.end
         }
         
         for videoTrack in package.composition.tracks(withMediaType: .video) {
+            
             let oldDuration = videoTrack.timeRange.duration
-            let newDuration = CMTimeMultiplyByFloat64(oldDuration, multiplier: multiplier)
-            videoTrack.scaleTimeRange(videoTrack.timeRange, toDuration: newDuration)
+            if oldDuration.isValid {
+                let newDuration = CMTimeMultiplyByFloat64(oldDuration, multiplier: multiplier)
+                videoTrack.scaleTimeRange(videoTrack.timeRange, toDuration: newDuration)
+            }
         }
         
         for audioTrack in package.composition.tracks(withMediaType: .audio){
             let oldDuration = audioTrack.timeRange.duration
-            let newDuration = CMTimeMultiplyByFloat64(oldDuration, multiplier: multiplier)
-            audioTrack.scaleTimeRange(audioTrack.timeRange, toDuration: newDuration)
+            if oldDuration.isValid {
+                let newDuration = CMTimeMultiplyByFloat64(oldDuration, multiplier: multiplier)
+                audioTrack.scaleTimeRange(audioTrack.timeRange, toDuration: newDuration)
+            }
         }
         
+        ///更新总时间
         package.totalDuration = CMTimeMultiplyByFloat64(package.totalDuration, multiplier: multiplier)
         
         // 保证最后一条能到视频最后
-        let
         if let instruction = package.instructions.last {
-            instruction.timeRange = CMTimeRange.init(start: instruction.timeRange.start, end: CMTimeSubtract(package.totalDuration, instruction.timeRange.start))
+            var lastInstructionEnd = instruction.timeRange.end
+            let compareResult = CMTimeCompare(lastInstructionEnd, package.totalDuration)
+            if compareResult == -1 {
+                lastInstructionEnd = CMTimeSubtract(package.totalDuration, instruction.timeRange.start)
+                instruction.timeRange = CMTimeRange.init(start: instruction.timeRange.start, end: lastInstructionEnd)
+            }
         }
         
         package.videoComposition.instructions = package.instructions

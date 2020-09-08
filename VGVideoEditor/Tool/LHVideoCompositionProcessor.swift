@@ -19,7 +19,6 @@ extension LHVideoCompositionProcessor {
     public typealias LHVideoCompositionLoadTuple = (asset: AVAsset, videoComposition: AVVideoComposition?, videoFrame:CGRect, renderSize:CGSize)
     
     public func loadCompositionInfo(composition: LHVideoComposition) ->  LHVideoCompositionLoadTuple {
-        
         for videoSource in composition.videos {
             merge(video: videoSource)
         }
@@ -43,7 +42,7 @@ extension LHVideoCompositionProcessor {
     
     //MARK:- 倍速
     public func speed(_ speed: Double){
-        let command = LHVideoSpeedCommand.init(settingPackage: settingPackage, speed: 2)
+        let command = LHVideoSpeedCommand.init(settingPackage: settingPackage, speed: speed)
         command.invoke()
     }
 

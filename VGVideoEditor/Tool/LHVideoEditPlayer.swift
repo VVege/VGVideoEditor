@@ -26,6 +26,7 @@ class LHVideoEditPlayer: NSObject {
         item.videoComposition = videoComposition
         player = AVPlayer.init(playerItem: item)
         item.addObserver(self, forKeyPath: "status", options: NSKeyValueObservingOptions.new.union(.old), context: nil)
+        item.audioTimePitchAlgorithm = .timeDomain
         playerLayer.player = player
         layer.addSublayer(playerLayer)
     }
@@ -37,6 +38,11 @@ class LHVideoEditPlayer: NSObject {
 
 //MARK:- Public
 extension LHVideoEditPlayer {
+    
+    public func replaceItem() {
+        
+    }
+    
     public func refresh(composition: LHVideoComposition){
         
 //        let current = self.composition
@@ -45,7 +51,7 @@ extension LHVideoEditPlayer {
         CATransaction.setDisableActions(true)
         /// TODO:检测sound
 //        if composition.rate != current.rate {
-            player.rate = Float(composition.rate)
+//            player.rate = Float(composition.rate)
 //        }
 //        if composition.bgColor != current.bgColor {
             layer.backgroundColor = composition.bgColor?.cgColor
@@ -79,7 +85,7 @@ extension LHVideoEditPlayer {
             if status == .readyToPlay {
                 NSLog("开始播放")
                 player.play()
-                player.rate = 2.0
+                
 //                testPlay()
             }else{
                 print(status)
@@ -88,10 +94,10 @@ extension LHVideoEditPlayer {
     }
     
     private func testPlay() {
-        let timer = Timer.scheduledTimer(withTimeInterval: 0.04, repeats: true) {[weak self] (_) in
-            let tolerance = CMTime.init(value: CMTimeValue(0.03 * 600), timescale: 600)
+        let timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) {[weak self] (_) in
             if let nowTime = self?.currentTime, let player = self?.player {
-                player.seek(to: CMTime.init(value: CMTimeValue.init(nowTime * 600), timescale: 600), toleranceBefore: tolerance, toleranceAfter: tolerance)
+                let seekTime = CMTime.init(value: CMTimeValue(nowTime * 600), timescale: 600)
+                player.currentItem?.seek(to: seekTime)
                 self?.currentTime += 0.04
             }
         }

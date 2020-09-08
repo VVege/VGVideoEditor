@@ -34,6 +34,8 @@
 		E3AB634F2503415A00B7C20E /* LHVideoWatermarkCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3AB634E2503415A00B7C20E /* LHVideoWatermarkCommand.swift */; };
 		E3AB63522503420100B7C20E /* LHVideoCompositionProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3AB63512503420100B7C20E /* LHVideoCompositionProcessor.swift */; };
 		E3F3F3EC25062B5800479443 /* LHVideoSpeedCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F3F3EB25062B5800479443 /* LHVideoSpeedCommand.swift */; };
+		E3FC95F925072F8A00291E79 /* LHVideoSettingValidation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3FC95F825072F8A00291E79 /* LHVideoSettingValidation.swift */; };
+		E3FC95FB25074A0900291E79 /* test1.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = E3FC95FA25074A0900291E79 /* test1.mp4 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -66,6 +68,8 @@
 		E3AB634E2503415A00B7C20E /* LHVideoWatermarkCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHVideoWatermarkCommand.swift; sourceTree = "<group>"; };
 		E3AB63512503420100B7C20E /* LHVideoCompositionProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHVideoCompositionProcessor.swift; sourceTree = "<group>"; };
 		E3F3F3EB25062B5800479443 /* LHVideoSpeedCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHVideoSpeedCommand.swift; sourceTree = "<group>"; };
+		E3FC95F825072F8A00291E79 /* LHVideoSettingValidation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHVideoSettingValidation.swift; sourceTree = "<group>"; };
+		E3FC95FA25074A0900291E79 /* test1.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = test1.mp4; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,6 +117,7 @@
 				E37FFE9124FE1759008A7291 /* AppDelegate.swift */,
 				E37FFE9524FE1759008A7291 /* ViewController.swift */,
 				E37FFE9724FE1759008A7291 /* Main.storyboard */,
+				E3FC95FA25074A0900291E79 /* test1.mp4 */,
 				E305F58524FF35BF005AE35C /* test2.mp4 */,
 				E305F58424FF35BF005AE35C /* test3.mp4 */,
 				E33C5DAA2500DD3F00ADE5A2 /* test6.mp4 */,
@@ -158,6 +163,7 @@
 				E305F58224FE25BC005AE35C /* LHVideoEditPlayer.swift */,
 				E37CF49A2503462500D74C9F /* LHVideoExporter.swift */,
 				E30E21FC25049F2600B551F9 /* LHVideoSettingPackage.swift */,
+				E3FC95F825072F8A00291E79 /* LHVideoSettingValidation.swift */,
 			);
 			path = Tool;
 			sourceTree = "<group>";
@@ -227,6 +233,7 @@
 				E305F58624FF35BF005AE35C /* test3.mp4 in Resources */,
 				E305F58724FF35BF005AE35C /* test2.mp4 in Resources */,
 				E33C5DAD2500E20200ADE5A2 /* test5.mp4 in Resources */,
+				E3FC95FB25074A0900291E79 /* test1.mp4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -250,6 +257,7 @@
 				E32DBA9125037B09006CE654 /* LHVideoCutCommand.swift in Sources */,
 				E305F58324FE25BC005AE35C /* LHVideoEditPlayer.swift in Sources */,
 				E3AB63522503420100B7C20E /* LHVideoCompositionProcessor.swift in Sources */,
+				E3FC95F925072F8A00291E79 /* LHVideoSettingValidation.swift in Sources */,
 				E3AB634325033DFD00B7C20E /* LHVideoCommand.swift in Sources */,
 				E30E21FB25049D0C00B551F9 /* LHVideoBackgroundImageCommand.swift in Sources */,
 				E37FFE9224FE1759008A7291 /* AppDelegate.swift in Sources */,
