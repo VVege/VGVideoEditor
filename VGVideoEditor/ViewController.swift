@@ -128,5 +128,24 @@ extension ViewController {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         
+        let newProcessor = LHVideoCompositionProcessor()
+        
+        let path = Bundle.main.path(forResource: "test1", ofType: "mp4")
+        let source = LHVideoSource.init(videoPath: path!)
+        
+        let path1 = Bundle.main.path(forResource: "test2", ofType: "mp4")
+        let source1 = LHVideoSource.init(videoPath: path1!)
+        
+        let path2 = Bundle.main.path(forResource: "test3", ofType: "mp4")
+        let source2 = LHVideoSource.init(videoPath: path2!)
+        
+        let composition = LHVideoComposition()
+        composition.videos = [source, source1, source2]
+        let tuple = newProcessor.loadCompositionInfo(composition: composition)
+
+        newProcessor.cut(range: CMTimeRange.init(start: CMTime.init(value: 10 * 600, timescale: 600), end: CMTime.init(value: 24 * 600, timescale: 600)))
+//        newProcessor.speed(4)
+//        newProcessor.cut(range: CMTimeRange.init(start: CMTime.init(value: 0 * 600, timescale: 600), end: CMTime.init(value: 3 * 600, timescale: 600)))
+        player.replaceItem(asset: newProcessor.settingPackage.composition, videoComposition: newProcessor.settingPackage.videoComposition)
     }
 }

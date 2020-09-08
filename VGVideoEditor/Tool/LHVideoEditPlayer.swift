@@ -18,29 +18,34 @@ class LHVideoEditPlayer: NSObject {
     
     private var player: AVPlayer!
     private let playerLayer = AVPlayerLayer()
-    private var currentTime:Double = 0
+    private var model: LHVideoComposition!
     
-    init(asset: AVAsset, videoComposition: AVVideoComposition?) {
+    init(composition: LHVideoComposition) {
         super.init()
-        let item = AVPlayerItem.init(asset: asset)
-        item.videoComposition = videoComposition
+    
+        
         player = AVPlayer.init(playerItem: item)
-        item.addObserver(self, forKeyPath: "status", options: NSKeyValueObservingOptions.new.union(.old), context: nil)
-        item.audioTimePitchAlgorithm = .timeDomain
         playerLayer.player = player
         layer.addSublayer(playerLayer)
+        
+        addItemObserve()
     }
     
     deinit {
-        player.currentItem?.removeObserver(self, forKeyPath: "status")
+        removeItemObserve()
     }
 }
 
 //MARK:- Public
 extension LHVideoEditPlayer {
     
-    public func replaceItem() {
-        
+    public func replaceItem(asset: AVAsset, videoComposition: AVVideoComposition?) {
+        removeItemObserve()
+        let item = AVPlayerItem.init(asset: asset)
+        item.videoComposition = videoComposition
+        item.audioTimePitchAlgorithm = .timeDomain
+        player.replaceCurrentItem(with: item)
+        addItemObserve()
     }
     
     public func refresh(composition: LHVideoComposition){
@@ -80,32 +85,33 @@ extension LHVideoEditPlayer {
 //MARK:- Private init Player
 extension LHVideoEditPlayer {
     
+    private func makePlayerItem(composition: LHVideoComposition) -> AVPlayerItem {
+        let processor = LHVideoCompositionProcessor()
+        
+        let item = AVPlayerItem.init(asset: asset)
+        item.videoComposition = videoComposition
+        item.audioTimePitchAlgorithm = .timeDomain
+    }
+    
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
         if keyPath == "status", let status = player.currentItem?.status {
             if status == .readyToPlay {
                 NSLog("开始播放")
                 player.play()
-                
-//                testPlay()
             }else{
                 print(status)
             }
         }
     }
-    
-    private func testPlay() {
-        let timer = Timer.scheduledTimer(withTimeInterval: 0.01, repeats: true) {[weak self] (_) in
-            if let nowTime = self?.currentTime, let player = self?.player {
-                let seekTime = CMTime.init(value: CMTimeValue(nowTime * 600), timescale: 600)
-                player.currentItem?.seek(to: seekTime)
-                self?.currentTime += 0.04
-            }
-        }
-        RunLoop.main.add(timer, forMode: RunLoop.Mode.common)
-    }
 }
 
 //MARK:- Set Player
 extension LHVideoEditPlayer {
-     
+    private func addItemObserve() {
+        player.currentItem?.addObserver(self, forKeyPath: "status", options: NSKeyValueObservingOptions.new.union(.old), context: nil)
+    }
+    
+    private func removeItemObserve() {
+        player.currentItem?.removeObserver(self, forKeyPath: "status")
+    }
 }

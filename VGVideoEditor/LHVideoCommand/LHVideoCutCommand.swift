@@ -55,7 +55,6 @@ extension LHVideoCutCommand {
         var insertPoint = CMTime.zero
         var lastTrackDuration = CMTime.zero
         for (index, instruction) in package.instructions.enumerated() {
-            
             let track = videoTracks[index]
             let currentTrackDuration = track.timeRange.duration
             var currentVideoDuration = CMTime.zero

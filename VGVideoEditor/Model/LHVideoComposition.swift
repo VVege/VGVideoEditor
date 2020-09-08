@@ -9,20 +9,28 @@
 import UIKit
 import AVFoundation
 
+enum LHVideoCutMode {
+    case abandon
+    case keep
+}
+
+enum LHVideoFillMode {
+    case fit
+    case fill
+}
+
 class LHVideoComposition: NSObject {
     public var videos:[LHVideoSource] = []
     public var sounds:[LHSoundSource] = []
-    public var videoFrame: CGRect = CGRect.zero
     public var bgSize:CGSize = CGSize.zero
-    public var duration: Double = 0
     public var bgColor: UIColor?
     public var bgImage: UIImage?
     public var hasWatermark = true
-    public var rate: Double = 1.0
-    public var fillMode: Int = 0
+    public var speed: Double = 1.0
+    public var fillMode: LHVideoFillMode = .fit
 
     public var cutRange:ClosedRange<Double>?
-    public var cutMode:Int = 0
+    public var cutMode:LHVideoCutMode = .keep
     
     func copyComposition() -> LHVideoComposition {
         let copy = LHVideoComposition()
@@ -40,13 +48,11 @@ class LHVideoComposition: NSObject {
         
         copy.videos = copyVideos
         copy.sounds = copySounds
-        copy.videoFrame = videoFrame
         copy.bgSize = bgSize
-        copy.duration = duration
         copy.bgColor = bgColor
         copy.bgImage = bgImage
         copy.hasWatermark = hasWatermark
-        copy.rate = rate
+        copy.speed = speed
         copy.fillMode = fillMode
         copy.cutRange = cutRange
         copy.cutMode = cutMode

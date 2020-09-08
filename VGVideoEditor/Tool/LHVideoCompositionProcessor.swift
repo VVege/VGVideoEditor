@@ -16,14 +16,25 @@ class LHVideoCompositionProcessor: NSObject {
 //MARK:- Public
 extension LHVideoCompositionProcessor {
 
-    public typealias LHVideoCompositionLoadTuple = (asset: AVAsset, videoComposition: AVVideoComposition?, videoFrame:CGRect, renderSize:CGSize)
-    
-    public func loadCompositionInfo(composition: LHVideoComposition) ->  LHVideoCompositionLoadTuple {
+    public func loadCompositionInfo(composition: LHVideoComposition) {
         for videoSource in composition.videos {
             merge(video: videoSource)
         }
+        
+        for audioSource in composition.sounds {
+            merge(audio: audioSource)
+        }
+        
+        if let cutRange = composition.cutRange {
+            
+        }
+        
+        if composition.speed != 1 {
+            speed(composition.speed)
+        }
     
-        return (asset: settingPackage.composition, videoComposition: settingPackage.videoComposition, videoFrame: settingPackage.videoFrame, renderSize: settingPackage.renderSize)
+        
+        return
     }
     
     //MARK:- 合并
@@ -74,4 +85,22 @@ extension LHVideoCompositionProcessor {
 //MARK:- Private
 extension LHVideoCompositionProcessor {
     
+    private func generateCutRange(range:ClosedRange<Double>, rangeMode:LHVideoCutMode) -> [CMTimeRange]? {
+        let totalDuration = settingPackage.totalDuration
+        let timeScale = totalDuration.timescale
+        let start = CMTime.init(value: CMTimeValue(range.lowerBound * Double(timeScale)), timescale: timeScale)
+        let end = CMTime.init(value: CMTimeValue(range.upperBound * Double(timeScale)), timescale: timeScale)
+        guard start > CMTime.zero, end < totalDuration else {
+            print("Error生成裁剪范围错误")
+            return nil
+        }
+        switch rangeMode {
+        case .abandon:
+            return [CMTimeRange.init(start: start, end: end)]
+        case .keep:
+            let smallRange = CMTimeRange.init(start: CMTime.zero, end: start)
+            let bigRange = CMTimeRange.init(start: end, end: totalDuration)
+            return [bigRange, smallRange]
+        }
+    }
 }
