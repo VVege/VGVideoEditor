@@ -19,9 +19,9 @@ enum LHVideoFillMode {
     case fill
 }
 
-class LHVideoComposition: NSObject {
+class LHVideoComposition {
     public var videos:[LHVideoSource] = []
-    public var sounds:[LHSoundSource] = []
+    public var audios:[LHAudioSource] = []
     public var bgSize:CGSize = CGSize.zero
     public var bgColor: UIColor?
     public var bgImage: UIImage?
@@ -35,19 +35,19 @@ class LHVideoComposition: NSObject {
     func copyComposition() -> LHVideoComposition {
         let copy = LHVideoComposition()
         var copyVideos:[LHVideoSource] = []
-        var copySounds:[LHSoundSource] = []
+        var copyAudios:[LHAudioSource] = []
         for video in videos {
             let copy = video.copySource()
             copyVideos.append(copy)
         }
         
-        for sound in sounds {
-            let copy = sound.copySource()
-            copySounds.append(copy)
+        for audio in audios {
+            let copy = audio.copySource()
+            copyAudios.append(copy)
         }
         
         copy.videos = copyVideos
-        copy.sounds = copySounds
+        copy.audios = copyAudios
         copy.bgSize = bgSize
         copy.bgColor = bgColor
         copy.bgImage = bgImage
@@ -59,4 +59,3 @@ class LHVideoComposition: NSObject {
         return copy
     }
 }
-

@@ -11,44 +11,58 @@ import AVFoundation
 
 class LHVideoCompositionProcessor: NSObject {
     public let settingPackage = LHVideoSettingPackage()
+    
+    private let handleError = LHVideoSettingValidation()
 }
 
 //MARK:- Public
 extension LHVideoCompositionProcessor {
 
-    public func loadCompositionInfo(composition: LHVideoComposition) {
+    public func loadCompositionInfo(composition: LHVideoComposition, loadAnimationTool: Bool = false) {
         for videoSource in composition.videos {
             merge(video: videoSource)
         }
         
-        for audioSource in composition.sounds {
+        for audioSource in composition.audios {
             merge(audio: audioSource)
-        }
-        
-        if let cutRange = composition.cutRange {
-            
         }
         
         if composition.speed != 1 {
             speed(composition.speed)
         }
-    
         
+        if let cutRange = composition.cutRange {
+            let ranges = generateCutRange(range: cutRange, rangeMode: composition.cutMode)
+            if ranges.count > 0 {
+                cut(range: ranges[0])
+            }
+            if ranges.count > 1 {
+                cut(range: ranges[1])
+            }
+        }
+        
+        if loadAnimationTool {
+            if let bgColor = composition.bgColor {
+                setBackgroundColor(bgColor)
+            }
+        }
+        
+        /// 验证
+        settingPackage.videoComposition.isValid(for: settingPackage.composition, timeRange: CMTimeRange.init(start: CMTime.zero, end: settingPackage.totalDuration), validationDelegate: handleError)
         return
     }
     
     //MARK:- 合并
     /// 合并视频
     public func merge(video: LHVideoSource) {
-        video.duration = AVURLAsset.init(url: URL.init(fileURLWithPath: video.path)).duration.seconds
-        
         let command = LHVideoMergeCommand.init(settingPackage: settingPackage, newVideoSource: video)
         command.invoke()
     }
     
     ///合并音频
-    public func merge(audio: LHSoundSource) {
-        
+    public func merge(audio: LHAudioSource) {
+        let command = LHAudioInsertCommand.init(settingPackage: settingPackage, audio: audio)
+        command.invoke()
     }
     
     //MARK:- 倍速
@@ -85,22 +99,38 @@ extension LHVideoCompositionProcessor {
 //MARK:- Private
 extension LHVideoCompositionProcessor {
     
-    private func generateCutRange(range:ClosedRange<Double>, rangeMode:LHVideoCutMode) -> [CMTimeRange]? {
+    /// 生成需要裁剪舍弃的区域
+    /// - Parameters:
+    ///   - range: 操作区域
+    ///   - rangeMode: 保留 or 舍弃
+    /// - Returns: 需舍弃的有效区域
+    private func generateCutRange(range:ClosedRange<Double>, rangeMode:LHVideoCutMode) -> [CMTimeRange] {
         let totalDuration = settingPackage.totalDuration
         let timeScale = totalDuration.timescale
         let start = CMTime.init(value: CMTimeValue(range.lowerBound * Double(timeScale)), timescale: timeScale)
         let end = CMTime.init(value: CMTimeValue(range.upperBound * Double(timeScale)), timescale: timeScale)
-        guard start > CMTime.zero, end < totalDuration else {
+        guard start >= CMTime.zero, end <= totalDuration else {
             print("Error生成裁剪范围错误")
-            return nil
+            return []
         }
         switch rangeMode {
         case .abandon:
+            if start == end {
+                return []
+            }
             return [CMTimeRange.init(start: start, end: end)]
         case .keep:
-            let smallRange = CMTimeRange.init(start: CMTime.zero, end: start)
-            let bigRange = CMTimeRange.init(start: end, end: totalDuration)
-            return [bigRange, smallRange]
+            var array:[CMTimeRange] = []
+            if end < totalDuration {
+                let bigRange = CMTimeRange.init(start: end, end: totalDuration)
+                array.append(bigRange)
+            }
+            if start > CMTime.zero {
+                let smallRange = CMTimeRange.init(start: CMTime.zero, end: start)
+                array.append(smallRange)
+            }
+            return array
         }
     }
+    
 }

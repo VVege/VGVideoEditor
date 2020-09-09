@@ -14,7 +14,6 @@ class LHVideoMergeCommand: NSObject, LHVideoCommand {
     private let package:LHVideoSettingPackage
     private let videoSource: LHVideoSource
     init(settingPackage: LHVideoSettingPackage, newVideoSource: LHVideoSource) {
-        //TODO:考虑是否copy问题
         package = settingPackage
         videoSource = newVideoSource
         super.init()
@@ -72,8 +71,11 @@ extension LHVideoMergeCommand {
         
         //插入音频轨道
         if let newAudioTrack = tuple.audioTrack, let newAudioMergedTrack = insertAudioTrackToComposition(audioTrack: newAudioTrack, videoDuration: videoDuration) {
-            //TODO: 研究audioMix
-            //TODO：视频所属的audio合成到一个 compositionTrack中，方便后期使用audioMix来管理
+            package.videoOriginalAudioTracks.append(newAudioMergedTrack)
+            let inputParameter = AVMutableAudioMixInputParameters(track: newAudioMergedTrack)
+            inputParameter.setVolume(1.0, at: CMTime.zero)
+            package.audioMixParameters.append(inputParameter)
+            package.audioMix.inputParameters = package.audioMixParameters
         }
         
         // 更新总时间
@@ -103,9 +105,11 @@ extension LHVideoMergeCommand {
     }
     
     private func getCompositionAudioTrack(assetTrack: AVAssetTrack) -> AVMutableCompositionTrack? {
+        //暂时都使用新轨道
+        /*
         if let track = package.composition.mutableTrack(compatibleWith: assetTrack) {
             return track
-        }
+        }*/
         let track = package.composition.addMutableTrack(withMediaType: AVMediaType.audio, preferredTrackID: kCMPersistentTrackID_Invalid)
         return track
     }

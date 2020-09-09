@@ -8,16 +8,20 @@
 
 import UIKit
 
-class LHVideoSource: NSObject {
+class LHVideoSource:Equatable {
+    
     public let path:String
-    public var duration: Double = 0
     init(videoPath: String) {
         path = videoPath
     }
     
     func copySource() -> LHVideoSource {
         let copy = LHVideoSource.init(videoPath: path)
-        copy.duration = duration
         return copy
     }
+    
+    static func == (lhs: LHVideoSource, rhs: LHVideoSource) -> Bool {
+        return lhs.path == rhs.path
+    }
+    
 }
