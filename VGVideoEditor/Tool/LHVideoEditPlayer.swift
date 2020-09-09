@@ -53,7 +53,14 @@ extension LHVideoEditPlayer {
             currentProcessor = LHVideoCompositionProcessor()
             currentProcessor.loadCompositionInfo(composition: composition)
             replaceItem(asset: currentProcessor.settingPackage.composition, videoComposition: currentProcessor.settingPackage.videoComposition, audioMix: currentProcessor.settingPackage.audioMix)
+        }else{
+            let needUpdateAudios = needUpdateAudioVolume(old: oldComposition, new: composition)
+            for audio in needUpdateAudios {
+                currentProcessor.updateVolume(audio: audio)
+            }
+            player.currentItem?.audioMix = currentProcessor.settingPackage.audioMix
         }
+        
         if needUpdateLayer(old: oldComposition, new: composition) {
             refreshLayer()
         }
@@ -92,6 +99,20 @@ extension LHVideoEditPlayer {
             return true
         }
         return false
+    }
+    
+    private func needUpdateAudioVolume(old: LHVideoComposition, new: LHVideoComposition) -> [LHAudioSource]{
+        var needUpdateVolumeSources:[LHAudioSource] = []
+        guard old.audios.elementsEqual(new.audios) else {
+            return []
+        }
+        for (index, newAudio) in new.audios.enumerated() {
+            let oldAudio = old.audios[index]
+            if oldAudio.volume != newAudio.volume {
+                needUpdateVolumeSources.append(newAudio)
+            }
+        }
+        return needUpdateVolumeSources
     }
     
     private func needUpdateLayer(old: LHVideoComposition, new: LHVideoComposition) -> Bool {

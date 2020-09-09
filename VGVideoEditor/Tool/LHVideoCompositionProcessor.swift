@@ -52,6 +52,17 @@ extension LHVideoCompositionProcessor {
         return
     }
     
+    //MARK:- 修改参数
+    /// 修改音频音量
+    public func updateVolume(audio: LHAudioSource) {
+        if let audioTrack = settingPackage.appendAudioTracks[audio.path] {
+            let command = LHAudioVolumeCommand.init(settingPackage: settingPackage, audioTrack: audioTrack, audioVolume: audio.volume)
+            command.invoke()
+        }else{
+            print("未找到指定音频")
+        }
+    }
+    
     //MARK:- 合并
     /// 合并视频
     public func merge(video: LHVideoSource) {

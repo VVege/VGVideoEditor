@@ -35,6 +35,7 @@ class ViewController: UIViewController {
         
         let sound1 = Bundle.main.path(forResource: "sound1", ofType: "mp3")
         let audio = LHAudioSource.init(audioPath: sound1!)
+        audio.volume = 0.5
         audio.isLoop = true
         composition = LHVideoComposition()
         composition.videos = [source, source1, source2]
@@ -105,7 +106,8 @@ extension ViewController {
         composition.cutMode = .abandon
         composition.speed = 0.5
  */
-        composition.fillMode = .fill
+//        composition.fillMode = .fill
+        composition.audios.first?.volume = 1.0
         player.refresh(composition: composition)
     }
 }

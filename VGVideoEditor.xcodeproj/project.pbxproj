@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		767BF4D4250996DC00266D90 /* LHAudioVolumeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = 767BF4D3250996DC00266D90 /* LHAudioVolumeCommand.swift */; };
 		E305F58324FE25BC005AE35C /* LHVideoEditPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E305F58224FE25BC005AE35C /* LHVideoEditPlayer.swift */; };
 		E305F58624FF35BF005AE35C /* test3.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = E305F58424FF35BF005AE35C /* test3.mp4 */; };
 		E305F58724FF35BF005AE35C /* test2.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = E305F58524FF35BF005AE35C /* test2.mp4 */; };
@@ -31,7 +32,6 @@
 		E3AB634325033DFD00B7C20E /* LHVideoCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3AB634225033DFD00B7C20E /* LHVideoCommand.swift */; };
 		E3AB634525033FAD00B7C20E /* LHVideoMergeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3AB634425033FAD00B7C20E /* LHVideoMergeCommand.swift */; };
 		E3AB634725033FCA00B7C20E /* LHAudioInsertCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3AB634625033FCA00B7C20E /* LHAudioInsertCommand.swift */; };
-		E3AB63492503402000B7C20E /* LHAudioVolumeCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3AB63482503402000B7C20E /* LHAudioVolumeCommand.swift */; };
 		E3AB634B2503408900B7C20E /* LHVideoBackgroundColorCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3AB634A2503408900B7C20E /* LHVideoBackgroundColorCommand.swift */; };
 		E3AB634D250340D700B7C20E /* LHVideoBackgroundAspectRatioCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3AB634C250340D700B7C20E /* LHVideoBackgroundAspectRatioCommand.swift */; };
 		E3AB634F2503415A00B7C20E /* LHVideoWatermarkCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3AB634E2503415A00B7C20E /* LHVideoWatermarkCommand.swift */; };
@@ -42,6 +42,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		767BF4D3250996DC00266D90 /* LHAudioVolumeCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHAudioVolumeCommand.swift; sourceTree = "<group>"; };
 		E305F58224FE25BC005AE35C /* LHVideoEditPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHVideoEditPlayer.swift; sourceTree = "<group>"; };
 		E305F58424FF35BF005AE35C /* test3.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = test3.mp4; sourceTree = "<group>"; };
 		E305F58524FF35BF005AE35C /* test2.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = test2.mp4; sourceTree = "<group>"; };
@@ -68,7 +69,6 @@
 		E3AB634225033DFD00B7C20E /* LHVideoCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHVideoCommand.swift; sourceTree = "<group>"; };
 		E3AB634425033FAD00B7C20E /* LHVideoMergeCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHVideoMergeCommand.swift; sourceTree = "<group>"; };
 		E3AB634625033FCA00B7C20E /* LHAudioInsertCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHAudioInsertCommand.swift; sourceTree = "<group>"; };
-		E3AB63482503402000B7C20E /* LHAudioVolumeCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHAudioVolumeCommand.swift; sourceTree = "<group>"; };
 		E3AB634A2503408900B7C20E /* LHVideoBackgroundColorCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHVideoBackgroundColorCommand.swift; sourceTree = "<group>"; };
 		E3AB634C250340D700B7C20E /* LHVideoBackgroundAspectRatioCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHVideoBackgroundAspectRatioCommand.swift; sourceTree = "<group>"; };
 		E3AB634E2503415A00B7C20E /* LHVideoWatermarkCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHVideoWatermarkCommand.swift; sourceTree = "<group>"; };
@@ -145,7 +145,7 @@
 				E3AB634425033FAD00B7C20E /* LHVideoMergeCommand.swift */,
 				E32DBA9025037B09006CE654 /* LHVideoCutCommand.swift */,
 				E3AB634625033FCA00B7C20E /* LHAudioInsertCommand.swift */,
-				E3AB63482503402000B7C20E /* LHAudioVolumeCommand.swift */,
+				767BF4D3250996DC00266D90 /* LHAudioVolumeCommand.swift */,
 				E3F3F3EB25062B5800479443 /* LHVideoSpeedCommand.swift */,
 				E3AB634A2503408900B7C20E /* LHVideoBackgroundColorCommand.swift */,
 				E30E21FA25049D0C00B551F9 /* LHVideoBackgroundImageCommand.swift */,
@@ -256,6 +256,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				767BF4D4250996DC00266D90 /* LHAudioVolumeCommand.swift in Sources */,
 				E3AB634F2503415A00B7C20E /* LHVideoWatermarkCommand.swift in Sources */,
 				E37FFE9624FE1759008A7291 /* ViewController.swift in Sources */,
 				E3AB634525033FAD00B7C20E /* LHVideoMergeCommand.swift in Sources */,
@@ -264,7 +265,6 @@
 				E305F58924FF391F005AE35C /* LHVideoSource.swift in Sources */,
 				E37CF49B2503462500D74C9F /* LHVideoExporter.swift in Sources */,
 				E3F3F3EC25062B5800479443 /* LHVideoSpeedCommand.swift in Sources */,
-				E3AB63492503402000B7C20E /* LHAudioVolumeCommand.swift in Sources */,
 				E305F58C24FF86F0005AE35C /* LHVideoUtil.swift in Sources */,
 				E32DBA9125037B09006CE654 /* LHVideoCutCommand.swift in Sources */,
 				E305F58324FE25BC005AE35C /* LHVideoEditPlayer.swift in Sources */,

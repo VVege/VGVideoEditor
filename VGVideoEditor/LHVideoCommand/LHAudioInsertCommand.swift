@@ -42,7 +42,7 @@ extension LHAudioInsertCommand {
                 }
                 package.appendAudioTracks[audio.path] = mutableTrack
                 let paramter = AVMutableAudioMixInputParameters.init(track: mutableTrack)
-                paramter.setVolume(audio.volume, at: CMTime.zero)
+                paramter.setVolume(Float(audio.volume), at: CMTime.zero)
                 package.audioMixParameters.append(paramter)
                 package.audioMix.inputParameters = package.audioMixParameters
             } catch {
