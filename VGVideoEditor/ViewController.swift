@@ -15,9 +15,7 @@ let filePath = documentPath + "/test.mp4"
 
 class ViewController: UIViewController {
 
-    private var player:LHVideoEditPlayer!
-    private var exportSession: AVAssetExportSession!
-    private var exporter: LHVideoExporter!
+    private var player:LHVideoCompositionPlayer!
     private var composition :LHVideoComposition!
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,12 +33,11 @@ class ViewController: UIViewController {
         
         let sound1 = Bundle.main.path(forResource: "sound1", ofType: "mp3")
         let audio = LHAudioSource.init(audioPath: sound1!)
-        audio.volume = 0.5
+        audio.volume = 0.0
         audio.isLoop = true
         composition = LHVideoComposition()
         composition.videos = [source, source1, source2]
         composition.audios = [audio]
-        composition.bgSize = CGSize(width: 300, height: 300)
         composition.fillMode = .fit
         composition.bgColor = UIColor.red
         play()
@@ -49,7 +46,7 @@ class ViewController: UIViewController {
     }
     
     func play() {
-        player = LHVideoEditPlayer.init()
+        player = LHVideoCompositionPlayer.init()
         player.refresh(composition: composition)
         player.delegate = self
         player.layer.position = CGPoint(x: view.bounds.width/2, y: view.bounds.height/2)
@@ -113,10 +110,14 @@ extension ViewController {
 }
 
 extension ViewController: LHVideoEditPlayerDelegate {
-    func preparedToPlay() {
-        player.play()
+    func playerRefreshFinish(isReset: Bool, errorMessage: String?) {
+        
     }
     
+    func playerDidPlayToEndTime() {
+        
+    }
+
     func playerIsPlaying(at time: Double) {
         
     }

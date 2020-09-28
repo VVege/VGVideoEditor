@@ -9,45 +9,54 @@
 import UIKit
 import AVFoundation
 
+enum LHVideoSettingStep {
+    case video
+    case speed
+    case range
+    case audio
+}
+
 class LHVideoSettingPackage {
     
     let composition = AVMutableComposition()
+    var error:[LHVideoSettingStep:String] = [:]
     
     /*视频*/
     let videoComposition = AVMutableVideoComposition()
     var instructions:[AVMutableVideoCompositionInstruction] = []
-    var videoTrackTransforms: [AVMutableCompositionTrack:CGAffineTransform] = [:]
-    
+
     /*音频*/
-    var videoOriginalAudioTracks: [AVCompositionTrack] = []
+    /// 视频原声音轨 key: video resourceId
+    var videoOriginalAudioTracks: [String:AVCompositionTrack] = [:]
+    /// 附加音轨 key: audio resourceId
     var appendAudioTracks: [String:AVCompositionTrack] = [:]
     var audioMixParameters: [AVMutableAudioMixInputParameters] = []
     let audioMix = AVMutableAudioMix()
     
     /*animationTool*/
-    var videoLayer: CALayer?
-    var parentLayer: CALayer?
+    let videoLayer = CALayer()
+    let parentLayer = CALayer()
+    var watermarkLayer = CALayer()
     
     /*info*/
-    var videoFrame = CGRect.zero
-    var renderSize = CGSize.zero
+    var videoSize = CGSize.zero
     var totalDuration = CMTime.zero
     
     func isEmpty() -> Bool {
         return totalDuration == CMTime.zero
     }
     
-    func loadLayer() {
-        if videoLayer == nil {
-            videoLayer = CALayer()
+    func loadAnimationTool() {
+        if videoComposition.animationTool == nil {
+            parentLayer.isGeometryFlipped = true
+            
+            parentLayer.frame = CGRect(x: 0, y: 0, width: videoSize.width, height: videoSize.height)
+            videoLayer.frame = CGRect(x: 0, y: 0, width: videoSize.width, height: videoSize.height)
+            parentLayer.addSublayer(videoLayer)
+            
+            watermarkLayer = LHVideoWatermarkGenerator.generateWatermark(videoSize: videoSize)
+            parentLayer.addSublayer(watermarkLayer)
+            videoComposition.animationTool = AVVideoCompositionCoreAnimationTool.init(postProcessingAsVideoLayer: videoLayer, in: parentLayer)
         }
-        if parentLayer == nil {
-            parentLayer = CALayer()
-            parentLayer?.addSublayer(videoLayer!)
-        }
-        
-        videoLayer?.frame = videoFrame
-        parentLayer?.frame = CGRect.init(x: 0, y: 0, width: renderSize.width, height: renderSize.height)
-        
     }
 }

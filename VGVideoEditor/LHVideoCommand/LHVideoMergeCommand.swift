@@ -13,9 +13,15 @@ class LHVideoMergeCommand: NSObject, LHVideoCommand {
     
     private let package:LHVideoSettingPackage
     private let videoSource: LHVideoSource
-    init(settingPackage: LHVideoSettingPackage, newVideoSource: LHVideoSource) {
+    private let bgColor: CGColor?
+    private let fillMode: LHVideoFillMode
+    private let renderRatio: LHVideoRenderRatio
+    init(settingPackage: LHVideoSettingPackage, newVideoSource: LHVideoSource, videoBgColor: CGColor?, videoFillMode: LHVideoFillMode, videoRenderRatio: LHVideoRenderRatio) {
         package = settingPackage
         videoSource = newVideoSource
+        bgColor = videoBgColor
+        fillMode = videoFillMode
+        renderRatio = videoRenderRatio
         super.init()
     }
     
@@ -37,43 +43,80 @@ extension LHVideoMergeCommand {
             
             let direction = LHVideoDirection.init(transform: newVideoTrack.preferredTransform)
             var newVideoSize = newVideoTrack.naturalSize
+            
+            if direction == .portrait || direction == .portraitUpsideDown {
+                newVideoSize = CGSize(width: newVideoSize.height, height: newVideoSize.width)
+            }
+            
             /// 旋转角度适配
+            /*
             let adjustDirectionTransform = direction.makeAdjustTransform(natureSize: newVideoSize)
-            newVideoSize = newVideoSize.applying(adjustDirectionTransform)
-                        
+            */
             if package.isEmpty() {
+                var renderSize = newVideoSize
+                switch renderRatio {
+                case .original:
+                    break
+                case .r16_9:
+                    let height = renderSize.height
+                    let width = height * 16.0/9.0
+                    renderSize = CGSize(width: width, height: height)
+                case .r9_16:
+                    let width = renderSize.width
+                    let height = width * 16.0/9.0
+                    renderSize = CGSize(width: width, height: height)
+                case .r3_4:
+                    let width = renderSize.width
+                    let height = width * 4.0/3.0
+                    renderSize = CGSize(width: width, height: height)
+                case .r4_3:
+                    let height = renderSize.height
+                    let width = height * 4.0/3.0
+                    renderSize = CGSize(width: width, height: height)
+                case .r1_1:
+                    let width = max(renderSize.width, renderSize.height)
+                    let height = width
+                    renderSize = CGSize(width: width, height: height)
+                case .r6_7:
+                    let width = renderSize.width
+                    let height = width * 7.0/6.0
+                    renderSize = CGSize(width: width, height: height)
+                case .r1_2:
+                    let width = renderSize.width
+                    let height = width * 2.0
+                    renderSize = CGSize(width: width, height: height)
+                case .r2_1:
+                    let height = renderSize.height
+                    let width = height * 2.0
+                    renderSize = CGSize(width: width, height: height)
+                }
+                package.videoComposition.renderSize = renderSize
+                package.composition.naturalSize = renderSize
                 // 30fps
                 package.videoComposition.frameDuration = CMTime.init(value: 1, timescale: 30)
-                package.videoComposition.renderSize = newVideoSize
-                package.composition.naturalSize = newVideoSize
                 /// 更新package
-                package.videoFrame = CGRect(x: 0, y: 0, width: newVideoSize.width, height: newVideoSize.height)
-                package.renderSize = package.videoFrame.size
+                package.videoSize = renderSize
                 
-                addNewInstruction(newVideoDuration: videoDuration, newVideoTrack: newVideoMergedTrack, preferredTransform: adjustDirectionTransform)
-//                                if adjustDirectionTransform != CGAffineTransform.identity {
-//                                    addNewInstruction(newVideoDuration: videoDuration, newVideoTrack: newVideoTrack, preferredTransform: adjustDirectionTransform)
-//                                }
+                let transform = generateTransform(newVideoSize: newVideoSize, renderSize: renderSize, natureTransform: newVideoTrack.preferredTransform, fillMode: fillMode)
+
+                addNewInstruction(newVideoDuration: videoDuration, newVideoTrack: newVideoMergedTrack, preferredTransform:transform)
             }else{
                 let renderSize = package.videoComposition.renderSize
                 
-                let scale = min(renderSize.width/newVideoSize.width, renderSize.height/newVideoSize.height)
+                let transform = generateTransform(newVideoSize: newVideoSize, renderSize: renderSize, natureTransform: newVideoTrack.preferredTransform, fillMode: fillMode)
                 
-                // 移至中心点
-                let translate = CGPoint.init(x: (renderSize.width - newVideoSize.width * scale) * 0.5, y: (renderSize.height - newVideoSize.height * scale) * 0.5)
-                let natureTransform = newVideoTrack.preferredTransform.concatenating(adjustDirectionTransform)
-                
-                let preferredTransfrom = CGAffineTransform.init(a: natureTransform.a * scale, b: natureTransform.b * scale, c: natureTransform.c * scale, d: natureTransform.d * scale, tx: natureTransform.tx * scale + translate.x, ty: natureTransform.ty * scale + translate.y)
-                
-                addNewInstruction(newVideoDuration: videoDuration, newVideoTrack: newVideoMergedTrack, preferredTransform: preferredTransfrom)
+                addNewInstruction(newVideoDuration: videoDuration, newVideoTrack: newVideoMergedTrack, preferredTransform: transform)
             }
+        }else{
+            package.error[.video] = "视频无效，未发现视频轨道"
         }
         
         //插入音频轨道
         if let newAudioTrack = tuple.audioTrack, let newAudioMergedTrack = insertAudioTrackToComposition(audioTrack: newAudioTrack, videoDuration: videoDuration) {
-            package.videoOriginalAudioTracks.append(newAudioMergedTrack)
+            package.videoOriginalAudioTracks[videoSource.path] = newAudioMergedTrack
             let inputParameter = AVMutableAudioMixInputParameters(track: newAudioMergedTrack)
-            inputParameter.setVolume(1.0, at: CMTime.zero)
+            inputParameter.setVolume(Float(videoSource.volume * 0.7), at: CMTime.zero)
+            inputParameter.audioTimePitchAlgorithm = .timeDomain
             package.audioMixParameters.append(inputParameter)
             package.audioMix.inputParameters = package.audioMixParameters
         }
@@ -155,38 +198,10 @@ extension LHVideoMergeCommand {
 //MARK:- Private Instruction
 extension LHVideoMergeCommand {
     private func addNewInstruction(newVideoDuration: CMTime, newVideoTrack: AVMutableCompositionTrack, preferredTransform: CGAffineTransform) {
-        package.videoTrackTransforms[newVideoTrack] = preferredTransform
-        /*
-        if let instrunction = package.instructions.first {
-            let lastEndTime = instrunction.timeRange.end
-            instrunction.timeRange = CMTimeRange.init(start: CMTime.zero, end: CMTimeAdd(instrunction.timeRange.end, newVideoDuration))
-            
-            let newLayerInstruction = AVMutableVideoCompositionLayerInstruction.init(assetTrack: newVideoTrack)
-            /*奇怪，为什么这两个设置都能正常播放*/
-            newLayerInstruction.setTransform(preferredTransform, at: lastEndTime)
-//            newLayerInstruction.setTransform(preferredTransform, at: newVideoTrack.timeRange.start)
-            
-            var lasts = instrunction.layerInstructions
-            lasts.append(newLayerInstruction)
-            instrunction.layerInstructions = lasts
-            package.videoComposition.instructions = package.instructions
-        }else{
-            let newInstruction = AVMutableVideoCompositionInstruction()
-            
-            newInstruction.timeRange = CMTimeRange.init(start: package.totalDuration, duration: newVideoDuration)
-            
-            let newLayerInstruction = AVMutableVideoCompositionLayerInstruction.init(assetTrack: newVideoTrack)
-            
-            newLayerInstruction.setTransform(preferredTransform, at: CMTime.zero)
-            newInstruction.layerInstructions = [newLayerInstruction]
-            package.instructions.append(newInstruction)
-            package.videoComposition.instructions = package.instructions
-        }*/
         
         let newInstruction = AVMutableVideoCompositionInstruction()
-        newInstruction.backgroundColor = UIColor.init(white: 0, alpha: 0).cgColor
         /*这里可以修改合并的背景颜色*/
-//        newInstruction.backgroundColor = UIColor.green.cgColor
+        newInstruction.backgroundColor = bgColor
         newInstruction.timeRange = CMTimeRange.init(start: package.totalDuration, duration: newVideoDuration)
         
         let newLayerInstruction = AVMutableVideoCompositionLayerInstruction.init(assetTrack: newVideoTrack)
@@ -195,5 +210,22 @@ extension LHVideoMergeCommand {
         newInstruction.layerInstructions = [newLayerInstruction]
         package.instructions.append(newInstruction)
         package.videoComposition.instructions = package.instructions
+    }
+    
+    private func generateTransform(newVideoSize:CGSize, renderSize:CGSize, natureTransform: CGAffineTransform, fillMode: LHVideoFillMode) -> CGAffineTransform {
+        
+        var scale:CGFloat = 1
+        switch fillMode {
+        case .fill:
+            scale = max(renderSize.width/newVideoSize.width, renderSize.height/newVideoSize.height)
+        case .fit:
+            scale = min(renderSize.width/newVideoSize.width, renderSize.height/newVideoSize.height)
+        }
+        
+        // 移至中心点
+        let translate = CGPoint.init(x: (renderSize.width - newVideoSize.width * scale) * 0.5, y: (renderSize.height - newVideoSize.height * scale) * 0.5)
+        
+        let preferredTransfrom = CGAffineTransform.init(a: natureTransform.a * scale, b: natureTransform.b * scale, c: natureTransform.c * scale, d: natureTransform.d * scale, tx: natureTransform.tx * scale + translate.x, ty: natureTransform.ty * scale + translate.y)
+        return preferredTransfrom
     }
 }

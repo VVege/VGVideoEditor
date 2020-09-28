@@ -10,23 +10,43 @@ import UIKit
 import AVFoundation
 
 class LHVideoCompositionProcessor: NSObject {
-    public let settingPackage = LHVideoSettingPackage()
+    public let settingPackage: LHVideoSettingPackage
     
     private let handleError = LHVideoSettingValidation()
+    
+    init(composition: LHVideoComposition, loadAnimationTool: Bool = false) {
+        settingPackage = LHVideoSettingPackage.init()
+        super.init()
+        loadCompositionInfo(composition: composition, loadAnimationTool: loadAnimationTool)
+    }
 }
 
 //MARK:- Public
 extension LHVideoCompositionProcessor {
+    public func error() -> String? {
+        for key in settingPackage.error.keys {
+            if let string = settingPackage.error[key] {
+                return string
+            }
+        }
+        return nil
+    }
+}
 
-    public func loadCompositionInfo(composition: LHVideoComposition, loadAnimationTool: Bool = false) {
+//MARK:- Private
+extension LHVideoCompositionProcessor {
+
+     private func loadCompositionInfo(composition: LHVideoComposition, loadAnimationTool: Bool = false) {
+        settingPackage.error.removeAll()
+        
+        /// 先处理视频
+        /// 后处理音频，保证音轨不会被变速，裁剪影响
         for videoSource in composition.videos {
-            merge(video: videoSource)
+            merge(video: videoSource, composition: composition)
         }
         
-        for audioSource in composition.audios {
-            merge(audio: audioSource)
-        }
-        
+        /// 先处理变速
+        /// 后处理裁剪
         if composition.speed != 1 {
             speed(composition.speed)
         }
@@ -41,11 +61,22 @@ extension LHVideoCompositionProcessor {
             }
         }
         
+        for audioSource in composition.audios {
+            merge(audio: audioSource)
+        }
+        
         if loadAnimationTool {
-            if let bgColor = composition.bgColor {
-                setBackgroundColor(bgColor)
+            if composition.hasWatermark {
+                settingPackage.loadAnimationTool()
             }
         }
+        
+        ///TODO:测试背景
+        /*
+        if let bgImage = composition.bgImage {
+            settingPackage.videoComposition.customVideoCompositorClass = LHCustomVideoCompositor.self
+            
+        }*/
         
         /// 验证
         settingPackage.videoComposition.isValid(for: settingPackage.composition, timeRange: CMTimeRange.init(start: CMTime.zero, end: settingPackage.totalDuration), validationDelegate: handleError)
@@ -63,47 +94,61 @@ extension LHVideoCompositionProcessor {
         }
     }
     
+    ///修改视频音量
+    public func updateVolume(video: LHVideoSource) {
+        if let audioTrack = settingPackage.videoOriginalAudioTracks[video.path] {
+            let command = LHAudioVolumeCommand.init(settingPackage: settingPackage, audioTrack: audioTrack, audioVolume: video.volume * 0.7)
+            command.invoke()
+        }else{
+            print("未找到指定音频")
+        }
+    }
+    
     //MARK:- 合并
     /// 合并视频
-    public func merge(video: LHVideoSource) {
-        let command = LHVideoMergeCommand.init(settingPackage: settingPackage, newVideoSource: video)
+    private func merge(video: LHVideoSource, composition: LHVideoComposition) {
+        
+        let command = LHVideoMergeCommand.init(settingPackage: settingPackage, newVideoSource: video, videoBgColor: composition.bgColor?.cgColor, videoFillMode: composition.fillMode, videoRenderRatio: composition.renderRatio)
         command.invoke()
     }
     
     ///合并音频
-    public func merge(audio: LHAudioSource) {
+    private func merge(audio: LHAudioSource) {
         let command = LHAudioInsertCommand.init(settingPackage: settingPackage, audio: audio)
         command.invoke()
     }
     
     //MARK:- 倍速
-    public func speed(_ speed: Double){
+    private func speed(_ speed: Double){
         let command = LHVideoSpeedCommand.init(settingPackage: settingPackage, speed: speed)
         command.invoke()
     }
 
     //MARK:- 裁剪
-    public func cut(range: CMTimeRange) {
+    private func cut(range: CMTimeRange) {
         let command = LHVideoCutCommand.init(settingPackage: settingPackage, removeTimeRange: range)
         command.invoke()
     }
     
     //MARK:- 背景相关操作
-    public func setBackgroundColor(_ color: UIColor) {
+    private func setBackgroundColor(_ color: UIColor) {
         let command = LHVideoBackgroundColorCommand.init(settingPackage: settingPackage, color: color)
         command.invoke()
     }
     
-    public func setBackgroundImage(_ color: UIColor) {
-        
+    private func setBackgroundImage(_ image: UIImage?) {
+        let command = LHVideoBackgroundImageCommand.init(settingPackage: settingPackage, image: image)
+        command.invoke()
     }
     
-    public func setVideoFillMode() {
-        
+    private func setVideoFillMode(_ fillMode: LHVideoFillMode) {
+        let command = LHVideoFillModeCommand.init(settingPackage: settingPackage, videoFillMode: fillMode)
+        command.invoke()
     }
     
-    public func setBackgroundRatio() {
-        
+    private func setRenderSize(_ renderSize: CGSize) {
+        let command = LHVideoRenderSizeCommand.init(settingPackage: settingPackage, size: renderSize)
+        command.invoke()
     }
 }
 

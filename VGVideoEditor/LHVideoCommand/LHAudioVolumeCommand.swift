@@ -21,12 +21,15 @@ class LHAudioVolumeCommand: NSObject, LHVideoCommand {
     }
     
     func invoke() {
-        for parameter in package.audioMixParameters {
-            if parameter.trackID == track.trackID {
-                parameter.setVolume(Float(volume), at: CMTime.zero)
-                break
-            }
+        package.audioMixParameters.removeAll { (parameter) -> Bool in
+            return parameter.trackID == track.trackID
         }
+        
+        let parameter = AVMutableAudioMixInputParameters.init(track: track)
+        parameter.setVolume(Float(volume), at: CMTime.zero)
+        parameter.audioTimePitchAlgorithm = .timeDomain
+        package.audioMixParameters.append(parameter)
+
         package.audioMix.inputParameters = package.audioMixParameters
     }
 }

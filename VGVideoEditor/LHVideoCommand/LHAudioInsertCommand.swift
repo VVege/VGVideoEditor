@@ -43,16 +43,15 @@ extension LHAudioInsertCommand {
                 package.appendAudioTracks[audio.path] = mutableTrack
                 let paramter = AVMutableAudioMixInputParameters.init(track: mutableTrack)
                 paramter.setVolume(Float(audio.volume), at: CMTime.zero)
+                paramter.audioTimePitchAlgorithm = .timeDomain
                 package.audioMixParameters.append(paramter)
                 package.audioMix.inputParameters = package.audioMixParameters
             } catch {
-                //TODO:Error处理
-                print("\(error)音频插入失败")
+                package.error[.audio] = "\(error)音频插入失败"
             }
              
         }else{
-            //TODO:Error处理
-            print("无效的音频")
+            package.error[.audio] = "无效的音频"
         }
     }
 }
@@ -83,7 +82,7 @@ extension LHAudioInsertCommand {
                 end = CMTimeAdd(end, audioDuration)
                 var isLast = false
                 if end > package.totalDuration {
-                    end = CMTimeSubtract(package.totalDuration, start)
+                    end = package.totalDuration
                     isLast = true
                 }
                 let range = CMTimeRange.init(start: start, end: end)

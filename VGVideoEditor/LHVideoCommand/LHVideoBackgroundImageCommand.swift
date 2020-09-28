@@ -9,6 +9,21 @@
 import UIKit
 import AVFoundation
 
-class LHVideoBackgroundImageCommand: NSObject {
-
+class LHVideoBackgroundImageCommand: NSObject , LHVideoCommand{
+    
+    private let package: LHVideoSettingPackage
+    private let bgImage: UIImage?
+    init(settingPackage: LHVideoSettingPackage, image: UIImage?) {
+        package = settingPackage
+        bgImage = image
+        super.init()
+    }
+    
+    func invoke() {
+//        package.parentLayer.bgImage = bgImage?.cgImage
+//        package.parentLayer.refreshLayer()
+//        
+//        package.loadAnimationTool()
+    }
+    
 }
