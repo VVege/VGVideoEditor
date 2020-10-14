@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E3015BAB2536E189003CE36D /* LHCustomCompositionLayerInstruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3015BAA2536E189003CE36D /* LHCustomCompositionLayerInstruction.swift */; };
 		E305F58624FF35BF005AE35C /* test3.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = E305F58424FF35BF005AE35C /* test3.mp4 */; };
 		E305F58724FF35BF005AE35C /* test2.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = E305F58524FF35BF005AE35C /* test2.mp4 */; };
 		E32CC495252163E000802C72 /* LHVideoBackgroundColorCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = E32CC477252163DF00802C72 /* LHVideoBackgroundColorCommand.swift */; };
@@ -48,6 +49,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		E3015BAA2536E189003CE36D /* LHCustomCompositionLayerInstruction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LHCustomCompositionLayerInstruction.swift; sourceTree = "<group>"; };
 		E305F58424FF35BF005AE35C /* test3.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = test3.mp4; sourceTree = "<group>"; };
 		E305F58524FF35BF005AE35C /* test2.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = test2.mp4; sourceTree = "<group>"; };
 		E32CC477252163DF00802C72 /* LHVideoBackgroundColorCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LHVideoBackgroundColorCommand.swift; sourceTree = "<group>"; };
@@ -157,6 +159,7 @@
 			children = (
 				E32CC493252163E000802C72 /* LHCustomVideoCompositor.swift */,
 				E32CC494252163E000802C72 /* LHCustomCompositionInstruction.swift */,
+				E3015BAA2536E189003CE36D /* LHCustomCompositionLayerInstruction.swift */,
 			);
 			path = CustomComposition;
 			sourceTree = "<group>";
@@ -304,6 +307,7 @@
 				E32CC496252163E000802C72 /* LHVideoRenderSizeCommand.swift in Sources */,
 				E32CC4A3252163E000802C72 /* LHVideoSettingPackage.swift in Sources */,
 				E32CC49C252163E000802C72 /* LHVideoSpeedCommand.swift in Sources */,
+				E3015BAB2536E189003CE36D /* LHCustomCompositionLayerInstruction.swift in Sources */,
 				E32CC499252163E000802C72 /* LHVideoWatermarkCommand.swift in Sources */,
 				E32CC4A0252163E000802C72 /* LHVideoUtil.swift in Sources */,
 				E37FFE9224FE1759008A7291 /* AppDelegate.swift in Sources */,
@@ -452,18 +456,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = PA8N68X393;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = AT942ZRU45;
 				INFOPLIST_FILE = VGVideoEditor/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = vege.VGVideoEditor;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ilaihua.videoEditor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = Development_For_All;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -473,18 +477,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = PA8N68X393;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = AT942ZRU45;
 				INFOPLIST_FILE = VGVideoEditor/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = vege.VGVideoEditor;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ilaihua.videoEditor;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = Development_For_All;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

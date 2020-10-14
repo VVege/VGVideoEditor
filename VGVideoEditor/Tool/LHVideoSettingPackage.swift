@@ -23,7 +23,7 @@ class LHVideoSettingPackage {
     
     /*视频*/
     let videoComposition = AVMutableVideoComposition()
-    var instructions:[AVMutableVideoCompositionInstruction] = []
+    var instructions:[LHCustomCompositionInstruction] = []
 
     /*音频*/
     /// 视频原声音轨 key: video resourceId

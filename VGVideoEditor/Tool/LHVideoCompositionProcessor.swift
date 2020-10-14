@@ -72,11 +72,9 @@ extension LHVideoCompositionProcessor {
         }
         
         ///TODO:测试背景
-        /*
         if let bgImage = composition.bgImage {
             settingPackage.videoComposition.customVideoCompositorClass = LHCustomVideoCompositor.self
-            
-        }*/
+        }
         
         /// 验证
         settingPackage.videoComposition.isValid(for: settingPackage.composition, timeRange: CMTimeRange.init(start: CMTime.zero, end: settingPackage.totalDuration), validationDelegate: handleError)
@@ -108,7 +106,7 @@ extension LHVideoCompositionProcessor {
     /// 合并视频
     private func merge(video: LHVideoSource, composition: LHVideoComposition) {
         
-        let command = LHVideoMergeCommand.init(settingPackage: settingPackage, newVideoSource: video, videoBgColor: composition.bgColor?.cgColor, videoFillMode: composition.fillMode, videoRenderRatio: composition.renderRatio)
+        let command = LHVideoMergeCommand.init(settingPackage: settingPackage, newVideoSource: video, videoBgColor: composition.bgColor?.cgColor, videoBgImage: composition.bgImage?.cgImage, videoFillMode: composition.fillMode, videoRenderRatio: composition.renderRatio)
         command.invoke()
     }
     

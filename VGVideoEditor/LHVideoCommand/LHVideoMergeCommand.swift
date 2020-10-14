@@ -14,12 +14,14 @@ class LHVideoMergeCommand: NSObject, LHVideoCommand {
     private let package:LHVideoSettingPackage
     private let videoSource: LHVideoSource
     private let bgColor: CGColor?
+    private let bgImage: CGImage?
     private let fillMode: LHVideoFillMode
     private let renderRatio: LHVideoRenderRatio
-    init(settingPackage: LHVideoSettingPackage, newVideoSource: LHVideoSource, videoBgColor: CGColor?, videoFillMode: LHVideoFillMode, videoRenderRatio: LHVideoRenderRatio) {
+    init(settingPackage: LHVideoSettingPackage, newVideoSource: LHVideoSource, videoBgColor: CGColor?, videoBgImage: CGImage?, videoFillMode: LHVideoFillMode, videoRenderRatio: LHVideoRenderRatio) {
         package = settingPackage
         videoSource = newVideoSource
         bgColor = videoBgColor
+        bgImage = videoBgImage
         fillMode = videoFillMode
         renderRatio = videoRenderRatio
         super.init()
@@ -198,15 +200,17 @@ extension LHVideoMergeCommand {
 //MARK:- Private Instruction
 extension LHVideoMergeCommand {
     private func addNewInstruction(newVideoDuration: CMTime, newVideoTrack: AVMutableCompositionTrack, preferredTransform: CGAffineTransform) {
-        
-        let newInstruction = AVMutableVideoCompositionInstruction()
-        /*这里可以修改合并的背景颜色*/
-        newInstruction.backgroundColor = bgColor
+                
+        let newInstruction = LHCustomCompositionInstruction()
+        newInstruction.renderSize = package.videoSize
+        newInstruction.bgImage = bgImage
+        if let color = bgColor {
+            newInstruction.backgroundColor = CIColor.init(cgColor: color)
+        }
         newInstruction.timeRange = CMTimeRange.init(start: package.totalDuration, duration: newVideoDuration)
         
-        let newLayerInstruction = AVMutableVideoCompositionLayerInstruction.init(assetTrack: newVideoTrack)
-        
-        newLayerInstruction.setTransform(preferredTransform, at: CMTime.zero)
+        let newLayerInstruction = LHCustomCompositionLayerInstruction.init()
+        newLayerInstruction.trackID = newVideoTrack.trackID
         newInstruction.layerInstructions = [newLayerInstruction]
         package.instructions.append(newInstruction)
         package.videoComposition.instructions = package.instructions

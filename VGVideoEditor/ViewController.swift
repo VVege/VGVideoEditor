@@ -37,12 +37,11 @@ class ViewController: UIViewController {
         audio.isLoop = true
         composition = LHVideoComposition()
         composition.videos = [source, source1, source2]
-        composition.audios = [audio]
         composition.fillMode = .fit
         composition.bgColor = UIColor.red
+        composition.bgImage = UIImage.init(named: "cat")
         play()
         
-//        export()
     }
     
     func play() {
@@ -51,47 +50,6 @@ class ViewController: UIViewController {
         player.delegate = self
         player.layer.position = CGPoint(x: view.bounds.width/2, y: view.bounds.height/2)
         view.layer.addSublayer(player.layer)
-    }
-    
-    func export() {
-        /*
-        print(filePath)
-        if FileManager.default.fileExists(atPath: filePath) {
-            try? FileManager.default.removeItem(atPath: filePath)
-        }
-        exportSession = AVAssetExportSession.init(asset: processor.settingPackage.composition, presetName: AVAssetExportPresetHighestQuality)
-        exportSession.shouldOptimizeForNetworkUse = true
-        exportSession.videoComposition = processor.settingPackage.videoComposition
-        exportSession.timeRange = CMTimeRange.init(start: CMTime.zero, end: processor.settingPackage.totalDuration)
-        exportSession.outputURL = URL.init(fileURLWithPath: filePath)
-        exportSession.outputFileType = .mp4
-        
-        NSLog("--开始导出")
-        exportSession.exportAsynchronously { [weak self] in
-            guard let session = self?.exportSession else {
-                return
-            }
-            switch session.status {
-            case .unknown:
-                print("unknown")
-            case .waiting:
-                 print("waiting")
-            case .exporting:
-                 print("exporting")
-            case .completed:
-                 print("completed")
-                NSLog("--完成导出")
-            case .failed:
-                print("failed")
-                if let error = session.error {
-                    print(error)
-                }
-            case .cancelled:
-                 print("cancelled")
-            @unknown default:
-                 print("default")
-            }
-        }*/
     }
 }
 
